@@ -91,7 +91,7 @@ export class WebSocketServer extends DurableObject {
     // If the client closes the connection, the runtime will close the connection too.
     server.addEventListener('close', (cls) => {
       this.currentlyConnectedWebSockets -= 1;
-      server.close(cls.code, "Durable Object is closing WebSocket");
+      console.log(cls.code, "Durable Object is closing WebSocket");
     });
 
     return new Response(null, {
@@ -174,7 +174,7 @@ export class WebSocketServer extends DurableObject {
     // If the client closes the connection, the runtime will close the connection too.
     server.addEventListener('close', (cls: CloseEvent) => {
       this.currentlyConnectedWebSockets -= 1;
-      server.close(cls.code, "Durable Object is closing WebSocket");
+      console.log(cls.code, "Durable Object is closing WebSocket");
     });
 
     return new Response(null, {
