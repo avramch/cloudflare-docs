@@ -12,8 +12,40 @@ import { Render, TabItem, Tabs, Type, MetaInfo } from "~/components";
 
 Wrangler offers APIs to programmatically interact with your Cloudflare Workers.
 
+- [`unstable_startWorker`](#unstable_startworker) - Start a server for running integration tests against your Worker.
 - [`unstable_dev`](#unstable_dev) - Start a server for running either end-to-end (e2e) or integration tests against your Worker.
 - [`getPlatformProxy`](#getplatformproxy) - Get proxies and values for emulating the Cloudflare Workers platform in a Node.js process.
+
+## `unstable_startWorker`
+
+This API exposes the internals of Wrangler's dev server, and allows you to customise how it runs. For example, you could use `unstable_startWorker()` to run integration tests against your Worker (the below example is with `node:test`, but this should work in any testing framework):
+
+```js
+import assert from "node:assert";
+import test, { after, before, describe } from "node:test";
+import { unstable_startWorker } from "wrangler";
+
+describe("worker", () => {
+	let worker;
+
+	before(async () => {
+		worker = await unstable_startWorker({ config: "wrangler.json" });
+	});
+
+	test("hello world", async () => {
+		assert.strictEqual(
+			await (await worker.fetch("http://example.com")).text(),
+			"Hello world"
+		);
+	});
+
+	after(async () => {
+		await worker.dispose();
+	});
+});
+```
+
+
 
 ## `unstable_dev`
 
