@@ -20,6 +20,7 @@ requestChecksumCalculation: "WHEN_REQUIRED",
 responseChecksumValidation: "WHEN_REQUIRED",
 ```
 
+If checksum is needed, R2 supports `SHA-1` and `SHA-256` algorithms.
 :::
 
 ```ts
@@ -104,6 +105,95 @@ console.log(
 //     Prefix: undefined,
 //     StartAfter: undefined
 //   }
+```
+
+### With SHA-1/SHA-256 checksum algorithms
+
+You can also use SHA-1 and SHA-256 algorithms for checksum.
+
+```ts
+import {
+	S3Client,
+	ListBucketsCommand,
+	ListObjectsV2Command,
+	GetObjectCommand,
+	PutObjectCommand,
+} from "@aws-sdk/client-s3";
+import { createHash } from "node:crypto";
+
+const S3 = new S3Client({
+	region: "auto",
+	endpoint: `https://${ACCOUNT_ID}.r2.cloudflarestorage.com`,
+	credentials: {
+		accessKeyId: ACCESS_KEY_ID,
+		secretAccessKey: SECRET_ACCESS_KEY,
+	},
+});
+
+// Create an array buffer
+const arrayBuffer = await OBJECT.arrayBuffer();
+
+// Create SHA-1 hash of the object to upload
+const ChecksumSHA1 = createHash("sha256")
+	.update(Buffer.from(arrayBuffer))
+	.digest("base64");
+
+// Upload the object with the checksums
+console.log(
+	await S3.send(
+		new PutObjectCommand({
+			Bucket: BUCKET_NAME,
+			Key: OBJECT_KEY,
+			Body: OBJECT,
+			ChecksumSHA1,
+		}),
+	),
+);
+
+// {
+//   '$metadata': {
+//     httpStatusCode: 200,
+//     requestId: undefined,
+//     extendedRequestId: undefined,
+//     cfId: undefined,
+//     attempts: 1,
+//     totalRetryDelay: 0
+//   },
+//   ETag: '"355801ab7ccb9ffddcb4c47e8cd61584"',
+//   ChecksumSHA1: '6MMnUIGMVR/u6AO3uCoUcSRnmzQ=',
+//   VersionId: '7e6b8ae6e2198a8c1acf76598af339ef'
+// }
+
+// Create SHA-256 hash of the object to upload
+const ChecksumSHA256 = createHash("sha256")
+	.update(Buffer.from(arrayBuffer))
+	.digest("base64");
+
+// Upload the object with the checksums
+console.log(
+	await S3.send(
+		new PutObjectCommand({
+			Bucket: BUCKET_NAME,
+			Key: OBJECT_KEY,
+			Body: OBJECT,
+			ChecksumSHA256,
+		}),
+	),
+);
+
+// {
+//   '$metadata': {
+//     httpStatusCode: 200,
+//     requestId: undefined,
+//     extendedRequestId: undefined,
+//     cfId: undefined,
+//     attempts: 1,
+//     totalRetryDelay: 0
+//   },
+//   ETag: '"f0d8680d5c596202dd81afa17428c65f"',
+//   ChecksumSHA256: 'jSIKqrDnDlJg3pSnXflg9QJyzGiexsvIa3tCCRfb3DA=',
+//   VersionId: '7e6b8ae42793fb4a693f020ff58ef8d0'
+// }
 ```
 
 ## Generate presigned URLs
