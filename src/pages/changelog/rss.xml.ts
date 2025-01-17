@@ -14,7 +14,7 @@ export const GET: APIRoute = async () => {
 				title: entry.data.title,
 				description: entry.data.description,
 				pubDate: entry.data.date,
-				link: `/changelog-next/${entry.slug}/`,
+				link: `/changelog/${entry.slug}/`,
 			};
 		}),
 	});
