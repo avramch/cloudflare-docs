@@ -78,18 +78,18 @@ const answer = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
   * `presence_penalty` <Type text="number" /> <MetaInfo text="optional" />
     * Increases the likelihood of the model introducing new topics (maximum: 2, minimum: 0).
   * `messages` <Type text="{
-  role: "user" | "assistant" | "system" | "tool" | (string & NonNullable<unknown>);
+  role: \"user\" | \"assistant\" | \"system\" | \"tool\" | (string & NonNullable<unknown>);
   content: string;
   name?: string;
 }[]" /> <MetaInfo text="optional" />
     * An array of message objects representing the conversation history.
   * `tools` <Type text="{
-  type: "function" | (string & NonNullable<unknown>);
+  type: \"function\" | (string & NonNullable<unknown>);
   function: {
     name: string;
     description: string;
     parameters?: {
-      type: "object" | (string & NonNullable<unknown>);
+      type: \"object\" | (string & NonNullable<unknown>);
       properties: {
         [key: string]: {
           type: string;
