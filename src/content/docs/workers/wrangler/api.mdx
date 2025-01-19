@@ -252,7 +252,7 @@ const platform = await getPlatformProxy(options);
 
       The path to the config file to use.
 
-      If no path is specified the default behavior is to search from the current directory up the filesystem for a[Wrangler configuration file](/workers/wrangler/configuration/) to use.
+      If no path is specified the default behavior is to search from the current directory up the filesystem for a [Wrangler configuration file](/workers/wrangler/configuration/) to use.
 
       **Note:** this field is optional but if a path is specified it must point to a valid file on the filesystem.
 
@@ -342,8 +342,6 @@ The bindings supported by `getPlatformProxy` are:
 
     For example, you might have the following file read by `getPlatformProxy`.
 
-
-
     <WranglerConfig>
 
     ```toml
@@ -364,6 +362,8 @@ The bindings supported by `getPlatformProxy` are:
 - [Queue bindings](/queues/configuration/javascript-apis/)
 
 - [D1 database bindings](/d1/worker-api/)
+
+- [Static Asset bindings](/workers/static-assets/binding/#binding)
 
 - [Hyperdrive bindings](/hyperdrive)
 
