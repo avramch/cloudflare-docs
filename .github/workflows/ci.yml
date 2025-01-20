@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: bash -e {0} 2> >(tee -a stderr.log >&2)
+        shell: bash -e {0} 2> >(tee -a $HOME/stderr.log >&2)
     steps:
       - uses: actions/checkout@v4
         with:
@@ -62,9 +62,6 @@ jobs:
           # cut -d$'\t' -f3 | # remove workflow/step columns
           # cut -d' ' -f2-) # remove timestamp
           # sed -n '/\[.*error.*\]/I,$p') # select lines from '[...error...]' or 'npm err' (case-insensitive) to EOF
-
-          ls
-          ls /home/runner/.npm/_logs/
 
           if [ -s "stderr.log" ]; then
             echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
