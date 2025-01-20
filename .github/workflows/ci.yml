@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: cat {0}
+        shell: echo "{0}"
     steps:
       - uses: actions/checkout@v4
         with:
