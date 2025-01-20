@@ -13,6 +13,9 @@ jobs:
   compile:
     name: Compiles
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -e {0} 2> >(tee -a stderr.log >&2)
     steps:
       - uses: actions/checkout@v4
         with:
@@ -50,3 +53,21 @@ jobs:
 
       - name: Tests
         run: npm run test
+
+      - name: post build errors as PR comment
+        if: failure()
+        run: |
+          # gh run view ${{ github.run_id }} --repo ${{ github.repository	}} --log-failed > logs.txt
+          # ERRORS=$(cat logs.txt |
+          # cut -d$'\t' -f3 | # remove workflow/step columns
+          # cut -d' ' -f2-) # remove timestamp
+          # sed -n '/\[.*error.*\]/I,$p') # select lines from '[...error...]' or 'npm err' (case-insensitive) to EOF
+
+          if [ -s "stderr.log" ]; then
+            echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
+
+            URL=$(gh run view ${{ github.run_id }} --json url --jq '.url')
+            BODY="[Build failed]($URL)\n\n\`\`\`txt\n$(cat stderr.log)\n\`\`\`"
+
+            gh pr comment ${{ github.event.number }} --repo ${{ github.repository }} --body $BODY
+          fi

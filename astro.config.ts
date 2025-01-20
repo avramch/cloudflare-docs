@@ -174,7 +174,7 @@ export default defineConfig({
 				"./src/title.css",
 				"./src/tooltips.css",
 			],
-			pagination: false,
+			pagination: "test",
 			plugins: [
 				...(runLinkCheck
 					? [
