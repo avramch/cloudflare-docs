@@ -64,8 +64,7 @@ jobs:
           # sed -n '/\[.*error.*\]/I,$p') # select lines from '[...error...]' or 'npm err' (case-insensitive) to EOF
 
           ls
-
-          cat stderr.log
+          ls /home/runner/.npm/_logs/
 
           if [ -s "stderr.log" ]; then
             echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
