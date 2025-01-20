@@ -28,10 +28,11 @@ jobs:
           key: static
 
       - run: npm ci
+
       - run: npm run check
       - run: npm run format:core:check
       ## TODO: content formatting checks
-      - run: npm run build
+      - run: npm run build |& tee -a build.log
         env:
           NODE_OPTIONS: "--max-old-space-size=4192"
           RUN_LINK_CHECK: true
@@ -55,12 +56,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh run view ${{ github.run_id }} --repo ${{ github.repository	}} --log-failed > logs.txt
-
-          ERRORS=$(cat logs.txt |
+          ERRORS=$(cat build.log |
           cut -d$'\t' -f3 | # remove workflow/step columns
           cut -d' ' -f2-) # remove timestamp
-          sed -n '/\[.*error.*\]/I,$p') # select lines from '[...error...]' or 'npm err' (case-insensitive) to EOF
+          sed -E -n '/\[.*error.*\]|npm err|\[vite\] Error/I,$p') # select lines from '[...error...]' or 'npm err' (case-insensitive) to EOF
 
           if [ -n $ERRORS ]; then
             URL=$(gh run view ${{ github.run_id }} --json url --jq '.url')
