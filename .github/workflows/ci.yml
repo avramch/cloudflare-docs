@@ -13,9 +13,6 @@ jobs:
   compile:
     name: Compiles
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash -e {0} 1>> ${{ github.workspace }}/stdout.log 2>> ${{ github.workspace }}/stderr.log
     steps:
       - uses: actions/checkout@v4
         with:
@@ -56,22 +53,18 @@ jobs:
       - name: post build errors as PR comment
         if: failure()
         run: |
-          # gh run view ${{ github.run_id }} --repo ${{ github.repository	}} --log-failed > logs.txt
-          # ERRORS=$(cat logs.txt |
-          # cut -d$'\t' -f3 | # remove workflow/step columns
-          # cut -d' ' -f2-) # remove timestamp
-          # sed -n '/\[.*error.*\]/I,$p') # select lines from '[...error...]' or 'npm err' (case-insensitive) to EOF
+          gh run view ${{ github.run_id }} --repo ${{ github.repository	}} --log-failed > logs.txt
 
-          echo $SHELLOPTS
+          ERRORS=$(cat logs.txt |
+          cut -d$'\t' -f3 | # remove workflow/step columns
+          cut -d' ' -f2-) # remove timestamp
+          sed -n '/\[.*error.*\]/I,$p') # select lines from '[...error...]' or 'npm err' (case-insensitive) to EOF
 
-          ls ${{ github.workspace }}
-          cat ${{ github.workspace }}/stderr.log
-
-          if [ -s "stderr.log" ]; then
+          if [ -n $ERRORS ]; then
             echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
 
             URL=$(gh run view ${{ github.run_id }} --json url --jq '.url')
-            BODY="[Build failed]($URL)\n\n\`\`\`txt\n$(cat stderr.log)\n\`\`\`"
+            BODY="[Build failed]($URL)\n\n\`\`\`txt\n$ERRORS\n\`\`\`"
 
             gh pr comment ${{ github.event.number }} --repo ${{ github.repository }} --body $BODY
           fi
