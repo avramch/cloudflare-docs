@@ -52,6 +52,8 @@ jobs:
 
       - name: post build errors as PR comment
         if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh run view ${{ github.run_id }} --repo ${{ github.repository	}} --log-failed > logs.txt
 
@@ -61,8 +63,6 @@ jobs:
           sed -n '/\[.*error.*\]/I,$p') # select lines from '[...error...]' or 'npm err' (case-insensitive) to EOF
 
           if [ -n $ERRORS ]; then
-            echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
-
             URL=$(gh run view ${{ github.run_id }} --json url --jq '.url')
             BODY="[Build failed]($URL)\n\n\`\`\`txt\n$ERRORS\n\`\`\`"
 
