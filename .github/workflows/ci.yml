@@ -27,7 +27,7 @@ jobs:
             node_modules/.astro
           key: static
 
-      - run: npm ci
+      - run: npm ci |& tee -a build.log
 
       - run: npm run check
       - run: npm run format:core:check
@@ -56,10 +56,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ERRORS=$(cat build.log |
-          cut -d$'\t' -f3 | # remove workflow/step columns
-          cut -d' ' -f2-) # remove timestamp
-          sed -E -n '/\[.*error.*\]|npm err|\[vite\] Error/I,$p') # select lines from '[...error...]' or 'npm err' (case-insensitive) to EOF
+          ERRORS=$(cat build.log | sed -E -n '/\[.*error.*\]|npm err|\[vite\] Error/I,$p')
 
           if [ -n $ERRORS ]; then
             URL=$(gh run view ${{ github.run_id }} --json url --jq '.url')
