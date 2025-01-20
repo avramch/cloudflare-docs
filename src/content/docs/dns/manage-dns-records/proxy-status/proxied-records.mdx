@@ -33,10 +33,6 @@ It may take longer than 5 minutes for you to actually experience record changes,
 
 If you have multiple `A/AAAA` records on the same name and at least one of them is proxied, Cloudflare will treat all `A/AAAA` records on this name as being proxied.
 
-## CNAME records that cannot be proxied
-
-If you encounter a `CNAME` record that you cannot proxy — usually associated with another CDN provider — a proxied version of that record will cause connectivity errors. Cloudflare is purposely preventing that record from being proxied to protect you from a misconfiguration.
-
 ## Protocol optimization
 
 For proxied records, if your domain has [HTTP/2 or HTTP/3 enabled](/speed/optimization/protocol/), Cloudflare automatically generates corresponding [HTTPS Service (HTTPS) records](/dns/manage-dns-records/reference/dns-record-types/#svcb-and-https) on the fly. HTTPS records allow you to provide a client with information about how it should connect to a server upfront, without the need of an initial plaintext HTTP connection.
