@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: bash -e {0} 2>> stderr.log
+        shell: bash -e {0} 1>> ${{ github.workspace }}/stdout.log 2>> ${{ github.workspace }}/stderr.log
     steps:
       - uses: actions/checkout@v4
         with:
