@@ -40,3 +40,17 @@ For proxied records, if your domain has [HTTP/2 or HTTP/3 enabled](/speed/optimi
 :::note
 Both HTTP/2 and HTTP/3 configurations also require that you have an SSL/TLS certificate served by Cloudflare. This means that disabling [Universal SSL](/ssl/edge-certificates/universal-ssl/), for example, could impact this behavior.
 :::
+
+## IP addresses
+
+:::caution[Note to self]
+Consider not going into detail about ingress vs egress here. Maybe a better option would be making note of that while mentioning Address Maps in cloudflare-configuration.mdx
+:::
+
+
+Because requests to proxied hostnames go through Cloudflare before reaching your origin server, all requests will appear to be coming from Cloudflare's IP addresses (and could potentially be blocked or rate limited). If you use proxied records, you may need to adjust your server configuration to [allow Cloudflare IPs](/fundamentals/concepts/cloudflare-ip-addresses/).
+
+Cloudflare anycast IPs used to proxy traffic on your domain are assigned automatically. These IPs might change at any time for operational reasons.
+If you need to allowlist Cloudflare IPs on your infrastructure or hosting provider, include the full list of [Cloudflare anycast IPs](https://www.cloudflare.com/ips/).
+
+As an Enterprise customer, you have the option to get [static IPs](/spectrum/about/static-ip/) or [bring your own IPs (BYOIP)](/byoip/).
