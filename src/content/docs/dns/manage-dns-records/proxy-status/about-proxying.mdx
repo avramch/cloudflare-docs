@@ -12,7 +12,7 @@ The **Proxy status** of a DNS record affects how Cloudflare treats incoming traf
 
 ![Proxy status affects how Cloudflare treats traffic intended for specific DNS records](~/assets/images/dns/proxy-status-screenshot.png)
 
-When you proxy specific DNS records through Cloudflare - specifically `A`, `AAAA`, or `CNAME` records  — DNS queries for these will resolve to Cloudflare anycast IPs instead of their original DNS target. This means that all requests intended for proxied hostnames will go to Cloudflare first and then be forwarded to your origin server.
+When you proxy specific DNS records through Cloudflare - specifically A, AAAA, or CNAME records  — DNS queries for these will resolve to Cloudflare anycast IPs instead of their original DNS target. This means that all requests intended for proxied hostnames will go to Cloudflare first and then be forwarded to your origin server.
 
 ```mermaid
 flowchart LR
@@ -24,6 +24,23 @@ This behavior allows Cloudflare to [optimize, cache, and protect](/fundamentals/
 
 ## DNS-only records
 
-When an `A`, `AAAA`, or `CNAME` record is **DNS-only** — also known as being gray-clouded — DNS queries for these will resolve to the record's normal IP address.
+When an A, AAAA, or CNAME record is **DNS-only** — also known as being gray-clouded — DNS queries for these will resolve to the record's normal IP address.
 
 In addition to potentially exposing your origin IP addresses to bad actors and [DDoS attacks](https://www.cloudflare.com/learning/ddos/what-is-a-ddos-attack/), leaving your records as **DNS-only** means that Cloudflare cannot [optimize, cache, and protect](/fundamentals/concepts/how-cloudflare-works/) requests to your application or provide analytics on those requests.
+
+## Example DNS table
+
+| Type |  Name  |   Content   | Proxy status |   TTL  | Actions |
+| :--: | :----: | :---------: | :----------: | :----: | ------: |
+|  `A` | `blog` | `192.0.2.1` |   `Proxied`  | `Auto` |  `Edit` |
+|  `A` | `shop` | `192.0.2.2` |  `DNS only`  | `Auto` |  `Edit` |
+
+In the example DNS table above, there are two DNS records. The record with the name `blog` has the proxy on, while the record named `shop` has the proxy off (that is, **DNS only**).
+
+### Proxied DNS record example
+
+When the browser initiates a HTTP/HTTPS request to `blog.example.com`, a DNS resolver will convert the hostname into an IP address. Since this domain is using Cloudflare as its Authoritative DNS provider, the DNS query will be routed to Cloudflare; and because the proxy is on, Cloudflare will answer with an anycast IP address. Subsequently, the browser initiates a HTTP/HTTPS request back to Cloudflare. When Cloudflare receives this request, it performs a lookup to find the matching domain and account configuration and processes the request accordingly. Cloudflare forwards it to the configured origin server, which is `192.0.2.1`.
+
+### DNS only record example
+
+When the browser initiates a HTTP/HTTPS request to `shop.example.com`, a DNS resolver will convert the hostname into an IP address. Since this domain is using Cloudflare as its Authoritative DNS provider, the DNS query will be routed to Cloudflare; but since the proxy is off (that is, **DNS only**), Cloudflare will answer with `192.0.2.2`. Finally, the browser initiates a HTTP/HTTPS request to the server hosted at `192.0.2.2`.
