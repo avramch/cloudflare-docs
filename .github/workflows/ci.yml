@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: echo "{0}"
+        shell: bash -e {0} 2> >(tee -a ${{ github.workspace }}/stderr.log >&2)
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,7 +32,6 @@ jobs:
 
       - run: npm ci
       - run: npm run check
-
       - run: npm run format:core:check
       ## TODO: content formatting checks
       - run: npm run build
@@ -63,7 +62,10 @@ jobs:
           # cut -d' ' -f2-) # remove timestamp
           # sed -n '/\[.*error.*\]/I,$p') # select lines from '[...error...]' or 'npm err' (case-insensitive) to EOF
 
-          cat stderr.log
+          echo $SHELLOPTS
+
+          ls ${{ github.workspace }}
+          cat ${{ github.workspace }}/stderr.log
 
           if [ -s "stderr.log" ]; then
             echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
