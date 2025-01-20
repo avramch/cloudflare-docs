@@ -63,9 +63,7 @@ jobs:
           # cut -d' ' -f2-) # remove timestamp
           # sed -n '/\[.*error.*\]/I,$p') # select lines from '[...error...]' or 'npm err' (case-insensitive) to EOF
 
-          echo $PWD
-
-          ls
+          cat stderr.log
 
           if [ -s "stderr.log" ]; then
             echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
