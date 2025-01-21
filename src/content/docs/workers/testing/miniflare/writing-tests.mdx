@@ -43,7 +43,7 @@ The rest of this guide demonstrates concepts with the [`node:test`](https://node
 
 Miniflare is a low-level API that exposes a large variety of configuration options for running your Worker. In most cases, your tests will only need a subset of the available options, but you can refer to the [full API reference](/workers/testing/miniflare/get-started/#reference) to explore what's possible with Miniflare.
 
-Before writing a test, you'll need to create a Worker. Since Miniflare is a low-level API that emulates the Cloudflare platform primitives, your Worker will need to be written in JavaScript or you'll need to [integrate your own build pipeline](#custom-builds) into your testing setup. Here's an example JavaScript-only worker:
+Before writing a test, you'll need to create a Worker. Since Miniflare is a low-level API that emulates the Cloudflare platform primitives, your Worker will need to be written in JavaScript or you'll need to [integrate your own build pipeline](#custom-builds) into your testing setup. Here's an example JavaScript-only Worker:
 
 ```js title="src/index.js"
 export default {
@@ -96,7 +96,7 @@ You should be able to run the above test via `node --test`
 The highlighted lines of the test file above demonstrate how to set up Miniflare to run a JavaScript Worker. Once Miniflare has been set up, your individual tests can send requests to the running Worker and assert against the responses. This is the main limitation of using Miniflare for testing your Worker as compared to the [Vitest integration](/workers/testing/vitest-integration/)—all access to your Worker must be through the `dispatchFetch()` Miniflare API, and you cannot unit test individual functions from your Worker.
 
 <Details header="What runtime are tests running in?">
-	When using the [Vitest integration](/workers/testing/vitest-integration/), your entire test suite runs in [`workerd`](https://github.com/cloudflare/workerd), which is why it's possible to unit test individual functions. By contrast, when using a different testing framework to run run tests via Miniflare, only your Worker itself is running in [`workerd`](https://github.com/cloudflare/workerd)—your test files run in Node.js. This means that importing functions from your Worker into your test files might exhibit different behaviour than you'd see at runtime if the functions rely on `workerd`-specific behaviour.
+When using the [Vitest integration](/workers/testing/vitest-integration/), your entire test suite runs in [`workerd`](https://github.com/cloudflare/workerd), which is why it's possible to unit test individual functions. By contrast, when using a different testing framework to run tests via Miniflare, only your Worker itself is running in [`workerd`](https://github.com/cloudflare/workerd)—your test files run in Node.js. This means that importing functions from your Worker into your test files might exhibit different behaviour than you'd see at runtime if the functions rely on `workerd`-specific behaviour.
 </Details>
 
 ## Interacting with Bindings
