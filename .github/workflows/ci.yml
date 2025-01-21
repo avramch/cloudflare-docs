@@ -59,7 +59,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ERRORS=$(cat build.log | sed -r -n '/\[.*error.*\]|npm err|\[vite\] Error/I,$p')
+          ERRORS=$(cat build.log | awk '/\[.*error.*\]|npm err|\[vite\] Error/I,0'
 
           if [ -n "$ERRORS" ]; then
             URL=$(gh run view ${{ github.run_id }} --json url --jq '.url')
