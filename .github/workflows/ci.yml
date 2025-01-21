@@ -13,6 +13,9 @@ jobs:
   compile:
     name: Compiles
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash --noprofile --norc -eo pipefail {0}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -58,7 +61,7 @@ jobs:
         run: |
           ERRORS=$(cat build.log | sed -E -n '/\[.*error.*\]|npm err|\[vite\] Error/I,$p')
 
-          if [ -n $ERRORS ]; then
+          if [ -n "$ERRORS" ]; then
             URL=$(gh run view ${{ github.run_id }} --json url --jq '.url')
             BODY="[Build failed]($URL)\n\n\`\`\`txt\n$ERRORS\n\`\`\`"
 
