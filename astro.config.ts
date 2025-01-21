@@ -174,12 +174,12 @@ export default defineConfig({
 				"./src/title.css",
 				"./src/tooltips.css",
 			],
-			pagination: falsee,
+			pagination: false,
 			plugins: [
 				...(runLinkCheck
 					? [
 							starlightLinksValidator({
-								errorOnInvalidHashes: false,
+								errorOnInvalidHashes: true,
 								errorOnLocalLinks: false,
 								exclude: [
 									"/api/",
