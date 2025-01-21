@@ -65,5 +65,7 @@ jobs:
             URL=$(gh run view ${{ github.run_id }} --json url --jq '.url')
             BODY="[Build failed]($URL)\n\n\`\`\`txt\n$ERRORS\n\`\`\`"
 
+            echo -e $BODY
+
             echo -e $BODY | gh pr comment ${{ github.event.number }} --repo ${{ github.repository }} --body-file -
           fi
