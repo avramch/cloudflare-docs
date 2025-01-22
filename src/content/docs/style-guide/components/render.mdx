@@ -89,3 +89,37 @@ your partial requires parameters to be passed, and none are passed, we can warn 
 
 The way that you can access these parameters is with the `props` object, surrounded in curly braces `{}`.
 This is a [JavaScript expression within MDX](https://mdxjs.com/docs/using-mdx/#props).
+
+## Dynamic (flexible) content in partials
+
+As partials are authored in MDX, they are able to use JavaScript expressions based on the `params` passed in.
+
+```mdx
+---
+params:
+  - product
+---
+
+Generic content.
+
+{ props.product === "Magic WAN" && <p>Content specific to Magic WAN only.</p> }
+```
+
+Within JavaScript expressions, HTML or components must be used.
+
+For example, when `params={{ path: "/foo/" }} is provided:
+
+```mdx
+---
+params:
+  - path
+---
+
+{/* ❌ - will link to the literal string "{props.path}" */}
+[link]({props.path})
+
+{/* ✅ - will link to "/foo/"" */}
+<a href={props.path}>link</a>
+```
+
+For this reason, the [`Markdown`](/style-guide/components/markdown/#example-for-variables-in-partials) component is available.
