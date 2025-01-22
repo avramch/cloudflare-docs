@@ -8,7 +8,7 @@ sidebar:
 
 When comparing time series, across locations/time ranges/etc., in endpoints that normalize values using [min-max](/radar/concepts/normalization), you must do so in the same request. This is done by asking for multiple series. All values will then be normalized using the same minimum and maximum value and can safely be compared against each other.
 
-[Netflows](/radar/investigate/netflows) values are normalized using [min0-max](/radar/concepts/normalization), so we will use it as an example. Refer to [Get NetFlow time series](/api/resources/radar/subresources/netflows/methods/timeseries/) for more information.
+[NetFlows](/radar/investigate/netflows) values are normalized using [min0-max](/radar/concepts/normalization), so we will use it as an example. Refer to [Get NetFlow time series](/api/resources/radar/subresources/netflows/methods/timeseries/) for more information.
 
 ## Compare locations
 
@@ -49,7 +49,7 @@ The response (shortened below for brevity) uses the provided `name` property to 
         "startTime": "2022-10-26T17:00:00Z",
         "endTime": "2022-11-02T17:00:00Z"
       },
-      "aggInterval": "ONE_HOUR",
+      "aggInterval": "ONE_HOUR"
     }
   }
 }
@@ -113,13 +113,19 @@ In the above example, we requested for an [aggregation interval](/radar/concepts
 The `result` property should return a response like this:
 
 ```json
-"tonga": {
-  "timestamps": ["2022-10-15T02:00:00Z", "2022-10-15T03:00:00Z", "2022-10-15T04:00:00Z", "2022-10-15T05:00:00Z"],
-  "values": ["1.0", "0.832473", "0.820083", "0.79408"]
-},
-"tonga_outage": {
-  "timestamps": ["2022-01-15T02:00:00Z", "2022-01-15T03:00:00Z", "2022-01-15T04:00:00Z", "2022-01-15T05:00:00Z"],
-  "values": ["0.354105", "0.357287", "0.181811", "0.044198"]
+{
+  "success": true,
+  "errors": [],
+  "result": {
+		"tonga": {
+			"timestamps": ["2022-10-15T02:00:00Z", "2022-10-15T03:00:00Z", "2022-10-15T04:00:00Z", "2022-10-15T05:00:00Z"],
+			"values": ["1.0", "0.832473", "0.820083", "0.79408"]
+		},
+		"tonga_outage": {
+			"timestamps": ["2022-01-15T02:00:00Z", "2022-01-15T03:00:00Z", "2022-01-15T04:00:00Z", "2022-01-15T05:00:00Z"],
+			"values": ["0.354105", "0.357287", "0.181811", "0.044198"]
+		}
+  }
 }
 ```
 
