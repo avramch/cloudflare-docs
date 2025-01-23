@@ -5,9 +5,14 @@ sidebar:
   order: 2
 ---
 
-import { GlossaryTooltip } from "~/components";
+import { GlossaryTooltip, WranglerConfig } from "~/components";
 
-A migration is a mapping process from a class name to a runtime state.
+A migration is a mapping process from a class name to a runtime state. This process communicates the changes to the Workers runtime and provides the runtime with instructions on how to deal with those changes.
+
+To apply a migration, you need to:
+
+1. Edit your `wrangler.json` file, as explained below.
+2. Re-deploy your Worker using `npx wrangler deploy`.
 
 You must initiate a migration process when you:
 
@@ -16,11 +21,9 @@ You must initiate a migration process when you:
 - Delete a Durable Object class.
 - Transfer an existing Durable Objects class.
 
-This process informs the Workers runtime of the changes and provides it with instructions on how to deal with those changes.
-
 :::note
 
-Updating code for an existing Durable Object class does not require a migration. To update code for an existing Durable Object class, run [`npx wrangler deploy`](/workers/wrangler/commands/#deploy). This is true even for changes to how code interacts with persistent storage. Because of [global uniqueness](/durable-objects/platform/known-issues/#global-uniqueness), you do not have to be concerned about old and new code interacting with the same storage simultaneously. However, it is your responsibility to ensure that new code is backwards compatible with existing stored data.
+Updating the code for an existing Durable Object class does not require a migration. To update the code for an existing Durable Object class, run [`npx wrangler deploy`](/workers/wrangler/commands/#deploy). This is true even for changes to how the code interacts with persistent storage. Because of [global uniqueness](/durable-objects/platform/known-issues/#global-uniqueness), you do not have to be concerned about old and new code interacting with the same storage simultaneously. However, it is your responsibility to ensure that the new code is backwards compatible with existing stored data.
 
 :::
 
@@ -28,15 +31,15 @@ Updating code for an existing Durable Object class does not require a migration.
 
 The most common migration performed is a new class migration, which informs the runtime that a new Durable Object class is being uploaded. This is also the migration you need when creating your first Durable Object class.
 
-import { WranglerConfig } from "~/components";
+To apply a create migration, edit your `wrangler.json` file in the following way:
 
 <WranglerConfig>
 
 ```toml
 [[migrations]]
-tag = "<v1>" # Should be unique for each entry
+tag = "<v1>" # Migration identifier. This should be unique for each migration entry
 new_classes = ["<NewDurableObjectClass>"] # Array of new classes
-# For SQLite storage backend use new_sqlite_classes=["<NewDurableObjectClass>"]
+# For SQLite storage backend use new_sqlite_classes=["<NewDurableObjectClass>"] instead
 ```
 
 </WranglerConfig>
@@ -47,13 +50,15 @@ Running a delete migration will delete all Durable Objects associated with the d
 
 - Do not run a delete migration on a class without first ensuring that you are not relying on the Durable Objects within that Worker anymore, that is, first remove the binding from the Worker.
 - Copy any important data to some other location before deleting.
-- No need to run a delete migration on a class that was renamed or transferred.
+- You do not have to run a delete migration on a class that was renamed or transferred.
+
+To apply a delete migration, edit your `wrangler.json` file in the following way:
 
 <WranglerConfig>
 
 ```toml
 [[migrations]]
-tag = "<v2>"
+tag = "<v2>" # Migration identifier. This should be unique for each migration entry
 deleted_classes = ["<ClassToDelete>"] # Array of deleted class names
 ```
 
@@ -63,6 +68,8 @@ deleted_classes = ["<ClassToDelete>"] # Array of deleted class names
 
 Rename migrations are used to transfer stored Durable Objects between two Durable Object classes in the same Worker code file.
 
+To apply a rename migration, edit your `wrangler.json` file in the following way:
+
 <WranglerConfig>
 
 ```toml
@@ -71,7 +78,7 @@ name = "<MY_DURABLE_OBJECT>"
 class_name = "<UpdatedDurableObject>" # Update the class name to the new class name
 
 [[migrations]]
-tag = "<v2>"
+tag = "<v2>" # Migration identifier. This should be unique for each migration entry
 renamed_classes = [{from = "<OldDurableObject>", to = "<UpdatedDurableObject>" }] # Array of rename directives
 ```
 
@@ -79,7 +86,7 @@ renamed_classes = [{from = "<OldDurableObject>", to = "<UpdatedDurableObject>" }
 
 ## Transfer migration
 
-Migrations can also be used for transferring stored data between two Durable Object classes. Transfer migrations are used to transfer stored Durable Objects between two Durable Object classes in different Worker code files.
+Transfer migrations are used to transfer stored Durable Objects between two Durable Object classes in different Worker code files.
 
 If you want to transfer stored Durable Objects between two Durable Object classes in the same Worker code file, use [rename migrations](#rename-migration) instead.
 
@@ -89,6 +96,8 @@ Do not run a [Create migration](#create-migration) for the destination class bef
 
 :::
 
+To apply a transfer migration, edit your `wrangler.json` file in the following way:
+
 <WranglerConfig>
 
 ```toml
@@ -97,7 +106,7 @@ name = "<MY_DURABLE_OBJECT>"
 class_name = "<DestinationDurableObjectClass>"
 
 [[migrations]]
-tag = "<v1>"
+tag = "<v1>" # Migration identifier. This should be unique for each migration entry
 transferred_classes = [{from = "<SourceDurableObjectClass>", from_script = "<SourceWorkerScript>", to = "<DestinationDurableObjectClass>" }]
 ```
 
@@ -133,6 +142,8 @@ Note that `.toml` files do not allow line breaks in inline tables (the `{key = "
 
 :::
 
+## Examples of Durable Object migration
+
 To illustrate an example migrations workflow, the `DurableObjectExample` class can be initially defined with:
 
 <WranglerConfig>
@@ -140,13 +151,15 @@ To illustrate an example migrations workflow, the `DurableObjectExample` class c
 ```toml
 # Creating a new Durable Object class
 [[migrations]]
-tag = "v1" # Should be unique for each entry
+tag = "v1" # Migration identifier. This should be unique for each migration entry
 new_classes = ["DurableObjectExample"] # Array of new classes
 ```
 
 </WranglerConfig>
 
-You can rename the `DurableObjectExample` class to `UpdatedName` and delete an outdated `DeprecatedClass` entirely. You can create seprate migrations for each operation, or combine them into a single migration as shown below.
+You can rename the `DurableObjectExample` class to `UpdatedName` and delete an outdated `DeprecatedClass` entirely. You can create separate migrations for each operation, or combine them into a single migration as shown below.
+
+### Create migration example
 
 To create new classes, add the following to your `wrangler` configuration file and deploy the Worker:
 
@@ -170,6 +183,8 @@ new_classes = ["DeprecatedClass","DurableObjectExample"] # Array of new classes
 
 </WranglerConfig>
 
+### Delete migration example
+
 To run the Delete migration, first remove the binding for the `DeprecatedClass` and deploy the Worker.
 
 <WranglerConfig>
@@ -189,6 +204,8 @@ new_classes = ["DeprecatedClass","DurableObjectExample"] # Array of new classes
 </WranglerConfig>
 
 If you just want to run the Delete migration, add the Delete migration configuration and deploy the Worker.
+
+### Rename migration example
 
 To run Rename migration, update the binding for the `DurableObjectExample` to the new class name `UpdatedName`. Add the Rename migration configuration and deploy the Worker.
 
@@ -215,6 +232,8 @@ deleted_classes = ["DeprecatedClass"] # Array of deleted class names
 ```
 
 </WranglerConfig>
+
+### Transfer migration example
 
 You can transfer stored Durable Objects from `DurableObjectExample` to `TransferredClass` from a Worker script named `OldWorkerScript`. The configuration of the `wrangler` file for your new Worker code (destination Worker code) would look like this:
 
@@ -253,5 +272,7 @@ new_sqlite_classes = ["MyDurableObject"] # Array of new classes
 ```
 
 </WranglerConfig>
+
+For an example of a new class migration, refer to [Get started: Configure Durable Object class with SQLite storage backend](/durable-objects/get-started/tutorial-with-sql-api/#6-configure-durable-object-class-with-sqlite-storage-backend).
 
 You cannot enable a SQLite storage backend on an existing, deployed Durable Object class, so setting `new_sqlite_classes` on later migrations will fail with an error. Automatic migration of deployed classes from their key-value storage backend to SQLite storage backend will be available in the future.
