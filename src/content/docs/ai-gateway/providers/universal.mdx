@@ -23,7 +23,7 @@ You can use the Universal endpoint to contact every provider. The payload is exp
 - `provider` : the name of the provider you would like to direct this message to. Can be OpenAI, workers-ai, or any of our supported providers.
 - `endpoint`: the pathname of the provider API you’re trying to reach. For example, on OpenAI it can be `chat/completions`, and for Workers AI this might be [`@cf/meta/llama-3.1-8b-instruct`](/workers-ai/models/llama-3.1-8b-instruct/). See more in the sections that are specific to [each provider](/ai-gateway/providers/).
 - `headers`:
-  - `Authorization`: the content of the Authorization HTTP Header that should be used when contacting this provider. This usually starts with “Token” or “Bearer”.
+  - `Authorization`: the content of the Authorization HTTP Header that should be used when contacting this provider. This usually starts with "Token" or "Bearer".
   - Any other custom header in a model's [configuration](/ai-gateway/configuration/), such as [Caching](/ai-gateway/configuration/caching/) or [Authentication](/ai-gateway/configuration/authentication/).
 - `query`: the payload as the provider expects it in their official API.
 
