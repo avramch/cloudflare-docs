@@ -45,7 +45,7 @@ new_classes = ["<NewDurableObjectClass>"] # Array of new classes
 
 Running a delete migration will delete all Durable Objects associated with the deleted class, including all of their stored data.
 
-- Do not run a delete migration on a class without first ensuring that you are not relying on the Durable Objects within that Worker anymore, i.e. first remove the binding from the Worker.
+- Do not run a delete migration on a class without first ensuring that you are not relying on the Durable Objects within that Worker anymore, that is, first remove the binding from the Worker.
 - Copy any important data to some other location before deleting.
 - No need to run a delete migration on a class that was renamed or transferred.
 
