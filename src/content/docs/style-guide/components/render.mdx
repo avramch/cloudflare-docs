@@ -102,12 +102,13 @@ params:
 
 Generic content.
 
+{/* If `params={{ product: "Magic WAN" }}` is passed, this will result in `Content specific to Magic WAN only.` */}
 { props.product === "Magic WAN" && <p>Content specific to Magic WAN only.</p> }
 ```
 
 Within JavaScript expressions, HTML or components must be used.
 
-For example, when `params={{ path: "/foo/" }} is provided:
+For example, when `params={{ path: "/foo/" }}` is provided:
 
 ```mdx
 ---
@@ -115,11 +116,26 @@ params:
   - path
 ---
 
-{/* ❌ - will link to the literal string "{props.path}" */}
+{/* ❌ - will link to the literal string `{props.path}` */}
 [link]({props.path})
 
-{/* ✅ - will link to "/foo/"" */}
+{/* ✅ - will link to `/foo/` */}
 <a href={props.path}>link</a>
 ```
 
 For this reason, the [`Markdown`](/style-guide/components/markdown/#example-for-variables-in-partials) component is available.
+
+```mdx
+---
+params:
+  - name
+---
+
+import { Markdown } from "~/components";
+
+{/* If `params={{ name: "Cloudflare" }}` is passed, this will result in `Hello <strong>Cloudflare</strong>` */}
+{/* If `params={{ name: "NotCloudflare" }}` is passed, this will result in `Goodbye <strong>NotCloudflare</strong>` */}
+{ name === "Cloudflare" ? <Markdown text="Hello **Cloudflare**!"> : <Markdown text={`Goodbye **${name}**!`}> }
+```
+
+More examples of using JSX are available in the [mdxjs.org documentation](https://mdxjs.com/docs/what-is-mdx/#expressions).
