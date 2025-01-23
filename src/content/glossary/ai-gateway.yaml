@@ -41,6 +41,10 @@ entries:
     general_definition: |-
       Header to [bypass caching for a specific request](/ai-gateway/configuration/caching/#skip-cache-cf-aig-skip-cache).
 
+  - term: cf-aig-request-timeout
+    general_definition: |-
+      Header to trigger a fallback provider based on a [predetermined response time](/ai-gateway/configuration/fallbacks/#request-timeouts) (measured in milliseconds).
+
   # Deprecated headers
   - term: cf-cache-ttl
     general_definition: |-
