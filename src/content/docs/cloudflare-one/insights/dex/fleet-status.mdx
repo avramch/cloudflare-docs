@@ -3,10 +3,9 @@ pcx_content_type: reference
 title: Fleet status
 sidebar:
   order: 1
-
 ---
 
-With DEX, you can monitor your users' devices and connection status.
+With DEX, you can monitor your users' devices and connection status. A fleet is a collection of user devices. All devices in a fleet have WARP installed and are connected to a [Cloudflare Zero Trust organization](/cloudflare-one/setup/#create-a-zero-trust-organization).
 
 ## View metrics
 
@@ -16,26 +15,25 @@ To view analytics on a per-device level, go to **My Team** > **Devices**. The **
 
 ## Available metrics
 
-* **Devices connected by colo**: Number of devices that are connected to a given [Cloudflare data center](https://www.cloudflarestatus.com/).
+- **Devices connected by colo**: Number of devices that are connected to a given [Cloudflare data center](https://www.cloudflarestatus.com/).
 
-* **Connectivity status**: Percentage of devices in a given WARP client state.
+- **Connectivity status**: Percentage of devices in a given WARP client state.
 
-  | Status            | Description |
-  |-------------------|-------------|
-  | Connected    |  WARP has successfully established a connection to the Cloudflare global network.  |
-  | Disconnected | WARP has been intentionally or unintentionally disconnected from the Cloudflare global network.  |
-  | Paused       | A user or administrator has taken an explicit action to temporarily turn off WARP, for example by entering an [Admin Override](/cloudflare-one/connections/connect-devices/warp/configure-warp/warp-settings/#admin-override) code.  Paused clients will [auto-connect](/cloudflare-one/connections/connect-devices/warp/configure-warp/warp-settings/#auto-connect) after a timeout period. |
-  | Connecting   | WARP is pending connection, but is actively trying to establish a connection to the Cloudflare global network. |
+  | Status       | Description                                                                                                                                                                                                                                                                                                                                                                                 |
+  | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | Connected    | WARP has successfully established a connection to the Cloudflare global network.                                                                                                                                                                                                                                                                                                            |
+  | Disconnected | WARP has been intentionally or unintentionally disconnected from the Cloudflare global network.                                                                                                                                                                                                                                                                                             |
+  | Paused       | A user or administrator has taken an explicit action to temporarily turn off WARP, for example by entering an [Admin Override](/cloudflare-one/connections/connect-devices/warp/configure-warp/warp-settings/#admin-override) code. Paused clients will [auto-connect](/cloudflare-one/connections/connect-devices/warp/configure-warp/warp-settings/#auto-connect) after a timeout period. |
+  | Connecting   | WARP is pending connection, but is actively trying to establish a connection to the Cloudflare global network.                                                                                                                                                                                                                                                                              |
 
+- **Mode**: [WARP mode](/cloudflare-one/connections/connect-devices/warp/configure-warp/warp-modes/) deployed on the device.
 
-* **Mode**: [WARP mode](/cloudflare-one/connections/connect-devices/warp/configure-warp/warp-modes/) deployed on the device.
+- **Colo**: Percentage of devices connected to a given Cloudflare data center.
 
-* **Colo**: Percentage of devices connected to a given Cloudflare data center.
+- **Platform**: Operating system of the device.
 
-* **Platform**: Operating system of the device.
+- **Major Version**: WARP client version installed on the device.
 
-* **Major Version**: WARP client version installed on the device.
+- **Device Status Over Time**: WARP client connection status over the selected time period.
 
-* **Device Status Over Time**: WARP client connection status over the selected time period.
-
-* **Connection Methods Over Time**: WARP mode used by the device over the selected time period.
+- **Connection Methods Over Time**: WARP mode used by the device over the selected time period.
