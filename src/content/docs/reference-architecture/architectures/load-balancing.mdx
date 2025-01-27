@@ -98,7 +98,7 @@ RTT becomes important at scale. For example, if a client and endpoint are both l
 
 ![Latency compounds based on the number of requests](~/assets/images/reference-architecture/load-balancing-reference-architecture-images/lb-ref-arch-3.svg "Figure 3: How latency can compound and affect the total time it takes to load a resource")
 
-In the same way a load balancer can pass traffic to a less-busy endpoint, it can also pass traffic to a geographically closer endpoint, resulting in a more responsive experience for the client. Specifically, the load balancer performs a lookup of the IP address that sent the request, determines its location, and selects the closest or most region-appropriate endpoint to send it to. (This is similar to functionality provided by DNS solutions like GeoDNS.
+In the same way a load balancer can pass traffic to a less-busy endpoint, it can also pass traffic to a geographically closer endpoint, resulting in a more responsive experience for the client. Specifically, the load balancer performs a lookup of the IP address that sent the request, determines its location, and selects the closest or most region-appropriate endpoint to send it to (this is similar to functionality provided by DNS solutions like GeoDNS).
 
 #### Availability
 
