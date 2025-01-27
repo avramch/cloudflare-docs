@@ -13,9 +13,12 @@ There are three ways to define how requests are batched:
 2. `batch-max-rows`: The maximum number of rows or events in a batch before data is written. Default, and maximum, is 10,000 rows.
 3. `batch-max-seconds`: The maximum duration of a batch before data is written, in seconds. Default is 15 seconds, maximum is 600 seconds.
 
+Pipelines batch definitions are hints. A pipeline will follow these hints closely, but batches will not be exact.
+
 All three batch definitions work together. Whichever limit is reached first triggers the delivery of a batch.
 
 For example, a `batch-max-mb` = 100 MB and a `batch-max-seconds` = 600 means that if 100 MB of events are posted to the Pipeline, the batch will be delivered. However, if it takes longer than 600 seconds for 100 MB of events to be posted, a batch of all the messages that were posted during those 600 seconds will be created and delivered.
+
 
 ## Batch settings
 
