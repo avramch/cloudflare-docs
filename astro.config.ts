@@ -14,6 +14,7 @@ import rehypeMermaid from "./src/plugins/rehype/mermaid.ts";
 import rehypeAutolinkHeadings from "./src/plugins/rehype/autolink-headings.ts";
 import rehypeExternalLinks from "./src/plugins/rehype/external-links.ts";
 import rehypeHeadingSlugs from "./src/plugins/rehype/heading-slugs.ts";
+import rehypeRewriteUrls from "~/plugins/rehype/rewrite-urls.ts";
 
 import { sidebar } from "./src/util/sidebar.ts";
 
@@ -31,6 +32,7 @@ export default defineConfig({
 			rehypeAutolinkHeadings,
 			// @ts-expect-error plugins types are outdated but functional
 			rehypeTitleFigure,
+			rehypeRewriteUrls,
 		],
 	},
 	experimental: {
