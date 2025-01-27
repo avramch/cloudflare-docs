@@ -35,22 +35,12 @@ In addition to potentially exposing your origin IP addresses to bad actors and [
 
 ## Detailed explanation
 
-<Example>
+<Render file="proxy-status-dns-table" />
 
-DNS management for **example.com**:
+### Proxied record example
 
-| Type |  Name  |   Content   | Proxy status |   TTL  |
-| :--: | :----: | :---------: | :----------: | :----: |
-|  A | `blog` | `192.0.2.1` |   Proxied  | Auto |
-|  A | `shop` | `192.0.2.2` |  DNS only  | Auto |
-</Example>
+<Render file="proxy-on-example" />
 
-In the example DNS table above, there are two DNS records. The record with the name `blog` has the proxy on, while the record named `shop` has the proxy off (that is, **DNS only**).
+### DNS-only record example
 
-### Proxied DNS record example
-
-When a browser initiates an HTTP/HTTPS request to `blog.example.com`, a DNS resolver will convert the hostname into an IP address. Since this domain is using Cloudflare as its authoritative DNS provider, the DNS query will be routed to Cloudflare; and because the proxy is on, Cloudflare will answer with an anycast IP address. Subsequently, the browser initiates an HTTP/HTTPS request back to Cloudflare. When Cloudflare receives this request, it performs a lookup to find the matching domain and account configuration and processes the request accordingly. When needed, Cloudflare forwards the request to the configured origin server, which is `192.0.2.1`.
-
-### DNS only record example
-
-When the browser initiates an HTTP/HTTPS request to `shop.example.com`, a DNS resolver will convert the hostname into an IP address. Since this domain is using Cloudflare as its authoritative DNS provider, the DNS query will be routed to Cloudflare; but since the proxy is off (that is, **DNS only**), Cloudflare will answer with `192.0.2.2`. Finally, the browser initiates an HTTP/HTTPS request to the server hosted at `192.0.2.2`.
+<Render file="proxy-off-example" />

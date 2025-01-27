@@ -6,7 +6,7 @@ sidebar:
 
 ---
 
-import { GlossaryTooltip } from "~/components"
+import { GlossaryTooltip, Render } from "~/components"
 
 The [Cloudflare global network](https://www.cloudflare.com/network/) can improve the security, performance, reliability, and privacy of anything connected to the Internet, such as your website, SaaS application, or corporate network.
 
@@ -34,8 +34,19 @@ Refer to our [Load Balancing reference architecture](/reference-architecture/arc
 
 In the Cloudflare dashboard, find out which DNS records are proxied by selecting your domain and navigating to the **DNS records** tab.
 
-#### Protocols, ports, and methods
+#### Example DNS table
 
+<Render file="proxy-status-dns-table" product="dns" />
+
+#### Proxied record example
+
+<Render file="proxy-on-example" product="dns" />
+
+#### DNS-only record example
+
+<Render file="proxy-off-example" product="dns" />
+
+#### Protocols, ports, and methods
 
 Proxying is on by default for records that serve HTTP/HTTPS traffic (A, AAAA, and CNAME records). To proxy HTTP/HTTPS traffic on [non-standard ports](/fundamentals/reference/network-ports/) or to proxy a TCP- or UDP- based application, use [Cloudflare Spectrum](/spectrum/).
 
