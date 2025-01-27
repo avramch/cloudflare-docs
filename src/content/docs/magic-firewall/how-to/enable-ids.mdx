@@ -78,6 +78,18 @@ Similarly, sending a patch request with the `enabled` field set to `true` will e
 
 </TabItem> </Tabs>
 
+## IDS limitations
+
+Currently, IDS does not run on every packet. IDS rules are run on a sampled subset.
+
+IDS does not run on WAN-to-Internet traffic sent to Gateway. IDS will run on WAN-to-Internet traffic if Gateway upgrade is disabled.
+
+| Flow | Magic Firewall | IDS | 
+| ---- | ---- | --- |
+| WAN-to-Gateway | Applied | Not applied |
+| WAN-to-Cloudflare Tunnel | Applied | Not applied |
+| WAN-to-WAN | Applied | Applied | 
+
 ## Next steps
 
 You must configure Logpush to log detected risks. Refer to [Configure a Logpush destination](/magic-firewall/how-to/use-logpush-with-ids/) for more information. Additionally, all traffic that is analyzed can be accessed via [network analytics](/analytics/network-analytics/). Refer to [GraphQL Analytics](/magic-firewall/tutorials/graphql-analytics/) to query the analytics data.
