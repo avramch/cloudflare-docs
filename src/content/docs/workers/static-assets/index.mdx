@@ -102,19 +102,19 @@ This approach ensures that static files like `index.html`, JavaScript bundles, s
 	You can control how assets are served, how unmatched routes are handled, as
 	well as override routing behavior in your Wrangler configuration file.
 
-    For example, if you have a Single Page Application and want to fallback to
-    `index.html` for unmatched routes, you can define this in your [Wrangler configuration](/workers/static-assets/routing/#alternate-configuration-options):
+	For example, if you have a Single Page Application and want to fallback to
+	`index.html` for unmatched routes, you can define this in your [Wrangler configuration](/workers/static-assets/routing/#alternate-configuration-options):
 
-    	<WranglerConfig>
-    	```toml
-    	name = "my-static-site"
-    	compatibility_date = "2025-01-01"
-    	[assets]
-    	directory = "./dist"
-    	not_found_handling = "single-page-application"
+	<WranglerConfig>
+		```toml
+		name = "my-static-site"
+		compatibility_date = "2025-01-01"
 
-    ```
-    	</WranglerConfig>
+		[assets]
+		directory = "./dist"
+		not_found_handling = "single-page-application"
+		```
+	</WranglerConfig>
 
 </Aside>
 
