@@ -3,10 +3,12 @@ updated: 2025-01-17
 difficulty: Beginner
 content_type: 📝 Tutorial
 pcx_content_type: tutorial
-title: Llama 3.2 11B Vision Instruct model on Cloudflare Workers AI.
+title: Llama 3.2 11B Vision Instruct model on Cloudflare Workers AI
 tags:
   - AI
 ---
+
+import { Details, Render, PackageManagers } from "~/components";
 
 ## 1: Prerequisites
 
@@ -37,25 +39,23 @@ Replace `$CLOUDFLARE_ACCOUNT_ID` and `$CLOUDFLARE_AUTH_TOKEN` with your actual a
 
    Run the following command in your terminal:
 
-   ```bash
-   npm create cloudflare@latest -- llama-vision-tutorial
-   ```
+<PackageManagers
+	type="create"
+	pkg="cloudflare@latest"
+	args={"llama-vision-tutorial"}
+/>
 
-   This command will:
+<Render
+	file="c3-post-run-steps"
+	product="workers"
+	params={{
+		category: "hello-world",
+		type: "Hello World Worker",
+		lang: "JavaScript",
+	}}
+/>
 
-   - Prompt you to install the `create-cloudflare` package if it's not already installed.
-   - Guide you through setting up your project.
-
-2. Follow the setup prompts
-   When prompted, select the following options:
-
-   - What would you like to start with?: Choose `Hello World example`.
-   - Which template would you like to use?: Choose `Hello World Worker`.
-   - Which language do you want to use?: Choose `TypeScript`.
-   - Do you want to use git for version control?: Choose `Yes`.
-   - Do you want to deploy your application?: Choose `No` (we will make changes before deploying).
-
-   After completing the setup, a new directory called `llama-vision-tutorial` will be created.
+After completing the setup, a new directory called `llama-vision-tutorial` will be created.
 
 3. Navigate to your application directory
    Change into the project directory:
