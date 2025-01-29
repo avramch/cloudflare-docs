@@ -38,12 +38,6 @@ In addition to potentially exposing your origin IP addresses to bad actors and [
 
 ## How proxying works
 
-```mermaid
-flowchart LR
-accTitle: Connections with Cloudflare
-A[Visitor] <-- Connection --> B[Cloudflare global network] <-- Connection --> C[Origin server]
-```
-
 When you set a DNS record to **Proxied**, Cloudflare responds with an [anycast IP address](/fundamentals/concepts/cloudflare-ip-addresses/) **instead of** the value defined on your [DNS table](/dns/manage-dns-records/#dns-records-table). This means that all requests intended for proxied hostnames will go to Cloudflare first and then be forwarded to your origin server.
 
 <Render file="proxy-status-dns-table" />
@@ -60,9 +54,17 @@ When you set a DNS record to **Proxied**, Cloudflare responds with an [anycast I
 
 ## IP addresses
 
-Because requests to proxied hostnames go through Cloudflare before reaching your origin server, all requests will appear to be coming from Cloudflare's IP addresses (and could potentially be blocked or rate limited). If you use proxied records, you may need to adjust your server configuration to [allow Cloudflare IPs](/fundamentals/concepts/cloudflare-ip-addresses/).
+Because requests to proxied records go through Cloudflare before reaching your origin server, traditionally all requests will appear to be coming from Cloudflare's IP addresses and could be blocked or rate limited. Refer to [allow Cloudflare IPs](/fundamentals/concepts/cloudflare-ip-addresses/) to learn how to adjust your server configuration.
 
-Cloudflare anycast IPs used to proxy traffic on your domain are assigned automatically. These IPs might change at any time for operational reasons.
-If you need to allowlist Cloudflare IPs on your infrastructure or hosting provider, include the full list of [Cloudflare anycast IPs](https://www.cloudflare.com/ips/).
+```mermaid
+flowchart LR
+accTitle: Connections with Cloudflare
+A[Client] <-- Connection --> B[Cloudflare global network] <-- Connection --> C[Origin server]
+```
 
-As an Enterprise customer, you have the option to get [static IPs](/spectrum/about/static-ip/) or [bring your own IPs (BYOIP)](/byoip/). Aegis gives you an option to get dedicated IPs for egress as well.
+Cloudflare anycast IPs used to proxy traffic on your domain are assigned automatically and can change at any time for operational reasons. By default, if you need to allowlist Cloudflare IPs on your infrastructure or hosting provider, you should include the full list of [Cloudflare anycast IPs](https://www.cloudflare.com/ips/).
+
+Alternatively, if you are an Enterprise customer, you have the following options:
+
+- [Cloudflare Aegis](/aegis/) allows you to get dedicated IPs for the connection between Cloudflare and your origin server, meaning you only have to allowlist a small number of IPs.
+- [Static IPs](/byoip/concepts/static-ips/) or [bring your own IPs (BYOIP)](/byoip/) allow you to specify what IPs should be used in the connection between clients and Cloudflare.
