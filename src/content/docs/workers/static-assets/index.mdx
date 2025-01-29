@@ -10,7 +10,9 @@ description: Create full-stack applications deployed to Cloudflare Workers.
 ---
 
 import {
+	Aside,
 	Badge,
+	Details,
 	Description,
 	InlineBadge,
 	DirectoryListing,
@@ -21,35 +23,147 @@ import {
 	LinkButton,
 	Stream,
 	Flex,
+	WranglerConfig,
+	Steps,
 } from "~/components";
 
-<Description>
-	Create fast, scalable front-end applications deployed to Cloudflare Workers.
-</Description>
+Cloudflare Workers simplify hosting and serving static like (such as HTML, CSS, images, and other resources) by combining a globally distributed CDN with lightweight, serverless backend logic.
+
+With Workers, you can:
+
+- **Host static sites** or **Single Page Applications (SPAs)** across Cloudflare's network.
+
+- **Add backend logic** (such as APIs or custom middleware) alongside your assets without needing a dedicated server.
+
+- Serve content to users with **low latency** using **built-in caching** for faster load times for users worldwide.
+
+- **Build full-stack applications** using Cloudflare's storage solutions, such as [R2](/r2/) for object storage, [KV](/kv/) for distributed key-value storage, [D1](/d1/) for relational databases, and [Durable Objects](/durable-objects/) for stateful, consistent storage and coordination. You can also connect to existing databases using [Hyperdrive](/hyperdrive/)
 
 ---
 
-## What you can build
+## Basic Workflow
 
-### Static Websites
+---
 
-Deploy static sites like blogs, portfolios, or documentation pages. Serve HTML, CSS, JavaScript, and media files directly from Cloudflare's network for low-latency access worldwide.
+From a high-level, here's how you can get started with deploying a simple static site on Workers:
 
-<LinkButton href="/workers/static-assets/get-started/#deploy-a-static-site">
-	Deploy a static site
-</LinkButton>
+<Steps>
+1. Build your static assets.
+   ```sh
+   npm run build
+	 ```
+	 <Details header="Don't have an existing project?">
+	 You can quickly scaffold a project using [Vite](https://vite.dev/guide/#scaffolding-your-first-vite-project):
+	```sh
+	npm create vite@latest
+	```
+	And follow the prompts! For first-timers, just select `vanilla` as your template.
+	</Details>
+2. Add and configure a Wrangler configuration file (`wrangler.toml` or `wrangler.json`)
 
-### Full-stack Applications
+    	<WranglerConfig>
+    	```toml
+    	name = "my-static-site"
+    	compatibility_date = "2025-01-01"
+    [assets]
+    directory = "./dist"
+    ```
+    	</WranglerConfig>
 
-Build dynamic and interactive server-side rendered (SSR) applications on Cloudflare Workers.
+    	In this configuration file, you define the **directory** where Cloudflare can find your built assets that need to be uploaded. To do this, we've added an `[assets]` block, and specified the `directory` as `dist/`.
 
-You can combine asset hosting with Cloudflare's data and storage products such as [Workers KV](/kv/), [Durable Objects](/durable-objects/), and [R2 Storage](/r2/) to build full-stack applications that serve both front-end and back-end logic in a single Worker.
+3. Deploy with Wrangler
 
-<LinkButton href="/workers/static-assets/get-started/#deploy-a-full-stack-application">
-	Deploy a full-stack application
-</LinkButton>
+   ```sh
+   npx wrangler deploy
+   ```
 
-### Supported frameworks
+   And let Cloudflare Workers handle asset uploading, routing, and caching automatically!
+
+</Steps>
+
+---
+
+## How it works
+
+When you deploy your app with Wrangler, it deploys both your Worker script and your static assets in a single operation. This deployment operates as a tightly integrated "unit" running across Cloudflare's network, combining static file hosting, custom logic, and global caching.
+
+Within this deployment, the Worker has two primary responsibilies:
+
+1. **Asset handling**
+2. **Running custom logic**
+
+### Asset handling
+
+Static asset hosting on Workers allows you to serve files such as HTML, JavaScript, CSS, images, and other resources directly from Cloudflare's global network. This setup eliminates the need for a traditional web server, simplifying deployment and optimizing performance.
+
+The **assets directory** specified in your Wrangler configuration file is central to this design. During deployment, Wrangler automatically uploads the files from this directory to Cloudflare’s infrastructure. Once deployed, requests for these assets are routed efficiently to locations closest to your users.
+
+This approach ensures that static files like `index.html`, JavaScript bundles, stylesheets, and images are served with minimal latency. Workers efficiently handle file resolution, meaning they serve files as-is from the defined directory, or return a fallback response (such as an error or default page) when a requested file is not found.
+
+<Aside type="tip">
+	You can control how assets are served, how unmatched routes are handled, as
+	well as override routing behavior in your Wrangler configuration file.
+
+    For example, if you have a Single Page Application and want to fallback to
+    `index.html` for unmatched routes, you can define this in your [Wrangler configuration](/workers/static-assets/routing/#alternate-configuration-options):
+
+    	<WranglerConfig>
+    	```toml
+    	name = "my-static-site"
+    	compatibility_date = "2025-01-01"
+    	[assets]
+    	directory = "./dist"
+    	not_found_handling = "single-page-application"
+
+    ```
+    	</WranglerConfig>
+
+</Aside>
+
+### Running custom logic
+
+One of the defining features of Cloudflare Workers is the ability to execute custom backend logic alongside your static assets. This logic can be used for handling requests, modifying responses, or implementing custom functionality for your application.
+
+For example, you can implement the following directly in your Worker:
+
+- **Dynamic routing:** Inspect incoming requests and route them based on their paths or headers. For example, you can route requests to `/api` to custom API logic, while static files are automatically served from your specified directory.
+
+- **API endpoints:** Define endpoints to handle user requests, fetch data from external APIs, or interact with databases.
+
+- **Response modifications:** Modify responses dynamically, such as adding headers, compressing payloads, or injecting data into static content.
+
+- **Stateful logic:** For scenarios requiring consistent state across requests, you can use [Durable Objects](/durable-objects/). Durable objects allow you to maintain state for use-cases such as real-time collaboration, session storage, global counters, and more.
+
+<Aside type="tip">
+You can change the default routing behavior (which prioritizes serving assets ahead of running Worker code) so that your [Worker code runs before an asset is served](/workers/static-assets/routing/#invoking-worker-script-ahead-of-assets/).
+
+For example, if you want to protect an asset behind authentication, you can override the routing behavior in your Wrangler configuration file:
+
+    	<WranglerConfig>
+    	```toml
+    	name = "my-static-site"
+    	compatibility_date = "2025-01-01"
+    	[assets]
+    	directory = "./dist"
+    	binding = "ASSETS"
+    	experimental_serve_directly = false
+    ```
+    	</WranglerConfig>
+
+</Aside>
+
+### Caching static assets
+
+Cloudflare provides automatic caching for static assets across its network, ensuring fast delivery to users worldwide. When a static asset is requested, it is automatically cached for future requests.
+
+#### Cache behavior
+
+- **First Request:** When an asset is requested for the first time, it is fetched from storage and cached at the nearest location.
+
+- **Subsequent Requests:** Future requests for the same asset are served directly from the cache, significantly reducing latency.
+
+## Supported frameworks
 
 The following Frameworks are currently supported on Cloudflare Workers:
 
@@ -61,7 +175,7 @@ Static Assets for Workers is currently in open beta. If you're looking for a fra
 
 :::
 
-### Pricing
+## Pricing
 
 Requests to a project with static assets can either return static assets or invoke the Worker script, depending on if the request [matches a static asset or not](/workers/static-assets/routing/).
 
@@ -69,11 +183,11 @@ Requests to a project with static assets can either return static assets or invo
 
 There is no additional cost for storing Assets.
 
-### Troubleshooting
+## Troubleshooting
 
 - `assets.bucket is a required field` — if you see this error, you need to update Wrangler to at least `3.78.10` or later. `bucket` is not a required field.
 
-### Limitations
+## Limitations
 
 The following limitations apply for Workers with static assets:
 
