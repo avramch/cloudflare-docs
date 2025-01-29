@@ -137,16 +137,17 @@ You can change the default routing behavior (which prioritizes serving assets ah
 
 For example, if you want to protect an asset behind authentication, you can override the routing behavior in your Wrangler configuration file:
 
-    	<WranglerConfig>
-    	```toml
-    	name = "my-static-site"
-    	compatibility_date = "2025-01-01"
-    	[assets]
-    	directory = "./dist"
-    	binding = "ASSETS"
-    	experimental_serve_directly = false
-    ```
-    	</WranglerConfig>
+	<WranglerConfig>
+		```toml
+		name = "my-static-site"
+		compatibility_date = "2025-01-01"
+
+		[assets]
+		directory = "./dist"
+		binding = "ASSETS"
+		run_worker_first = true
+		```
+	</WranglerConfig>
 
 </Aside>
 
