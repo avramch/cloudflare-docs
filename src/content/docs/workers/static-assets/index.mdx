@@ -48,36 +48,34 @@ From a high-level, here's how you can get started with deploying a simple static
 
 <Steps>
 1. Build your static assets.
-   ```sh
-   npm run build
-	 ```
-	 <Details header="Don't have an existing project?">
-	 You can quickly scaffold a project using [Vite](https://vite.dev/guide/#scaffolding-your-first-vite-project):
+ 	```sh
+	npm run build
+	```
+	<Details header="Don't have an existing project?">
+	You can quickly scaffold a project using [Vite](https://vite.dev/guide/#scaffolding-your-first-vite-project):
 	```sh
 	npm create vite@latest
 	```
 	And follow the prompts! For first-timers, just select `vanilla` as your template.
 	</Details>
 2. Add and configure a Wrangler configuration file (`wrangler.toml` or `wrangler.json`)
+	<WranglerConfig>
+		```toml
+		name = "my-static-site"
+		compatibility_date = "2025-01-01"
+		[assets]
+		directory = "./dist"
+		```
+	</WranglerConfig>
 
-    	<WranglerConfig>
-    	```toml
-    	name = "my-static-site"
-    	compatibility_date = "2025-01-01"
-    [assets]
-    directory = "./dist"
-    ```
-    	</WranglerConfig>
-
-    	In this configuration file, you define the **directory** where Cloudflare can find your built assets that need to be uploaded. To do this, we've added an `[assets]` block, and specified the `directory` as `dist/`.
+	In this configuration file, you define the **directory** where Cloudflare can find your built assets that need to be uploaded. To do this, we've added an `[assets]` block, and specified the `directory` as `dist/`.
 
 3. Deploy with Wrangler
+	```sh
+	npx wrangler deploy
+	```
 
-   ```sh
-   npx wrangler deploy
-   ```
-
-   And let Cloudflare Workers handle asset uploading, routing, and caching automatically!
+	And let Cloudflare Workers handle asset uploading, routing, and caching automatically!
 
 </Steps>
 
