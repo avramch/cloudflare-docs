@@ -1,7 +1,7 @@
 ---
 title: Protect payment forms from malicious bots using Turnstile
 pcx_content_type: tutorial
-updated: 2024-11-11
+updated: 2024-12-17
 difficulty: Beginner
 content_type: 📝 Tutorial
 languages:
@@ -10,6 +10,10 @@ tags:
   - Node.js
   - Hono
   - Stripe
+products:
+  - Turnstile
+  - Workers
+  - Developer Spotlight
 spotlight:
   author: Hidetaka Okamoto
   author_bio_link: https://www.linkedin.com/in/hideokamoto/
@@ -160,7 +164,7 @@ Since we will use JSX to dynamically create HTML, you will need to change `src/i
 mv src/index.ts src/index.tsx
 ```
 
-At the same time, change the filename specified in the `wrangler.toml`.
+At the same time, change the filename specified in the `wrangler.toml / wrangler.json` file.
 
 ```diff
 #:schema node_modules/wrangler/config-schema.json
