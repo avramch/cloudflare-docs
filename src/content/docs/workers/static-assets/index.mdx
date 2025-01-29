@@ -97,7 +97,7 @@ Within this deployment, the Worker has two primary responsibilies:
 
 Static asset hosting on Workers allows you to serve files such as HTML, JavaScript, CSS, images, and other resources directly from Cloudflare's global network. This setup eliminates the need for a traditional web server, simplifying deployment and optimizing performance.
 
-The **assets directory** specified in your Wrangler configuration file is central to this design. During deployment, Wrangler automatically uploads the files from this directory to Cloudflare’s infrastructure. Once deployed, requests for these assets are routed efficiently to locations closest to your users.
+The **assets directory** specified in your Wrangler configuration file is central to this design. During deployment, Wrangler automatically uploads the files from this directory to Cloudflare's infrastructure. Once deployed, requests for these assets are routed efficiently to locations closest to your users.
 
 This approach ensures that static files like `index.html`, JavaScript bundles, stylesheets, and images are served with minimal latency. Workers efficiently handle file resolution, meaning they serve files as-is from the defined directory, or return a fallback response (such as an error or default page) when a requested file is not found.
 
