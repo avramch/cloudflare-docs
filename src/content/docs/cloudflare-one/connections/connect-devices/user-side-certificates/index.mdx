@@ -34,9 +34,9 @@ After confirming that the certificates are installed on the end-user device, mar
 2. Select a certificate.
 3. In the detailed menu, under **Basic Information** mark the certificate as **In-Use**.
 
-For WARP client versions prior to 2024.12.554.0, certificates had to be marked as **In-Use** in the Cloudflare dashboard before the Cloudflare certificates could be pushed to an end-user device's certificate store. Certificate propagation may also take up to 24 hours but resetting the encryption keys will force the update.
+For WARP client versions prior to 2024.12.554.0, certificates had to be marked as **In-Use** in the Cloudflare dashboard before the WARP client could push the Cloudflare certificates to an end-user device's certificate store. Certificate propagation could also take up to 24 hours but resetting the encryption keys will force the update.
 
-In both scenarios (before and after WARP client version 2024.12.554.0), certificate propagation will only occur when the WARP client is responsible for automatically installing the certificate on the client device. Certificate propagation by WARP is enabled by going to **Settings** > **WARP Client** in [Zero Trust](https://one.dash.cloudflare.com/) toggling **Install CA to system certificate store** on.
+In both scenarios (before and after WARP client version 2024.12.554.0), certificate propagation will only occur when the WARP client is responsible for automatically installing the certificate on the client device. Enable certificate propagation by the WARP client by going to **Settings** > **WARP Client** in [Zero Trust](https://one.dash.cloudflare.com/) and toggle **Install CA to system certificate store** on.
 
 If **Install CA to system certificate store** is toggled off, you are either [manually installing the certificate](/cloudflare-one/connections/connect-devices/user-side-certificates/manual-deployment/), using a [MDM solution](/cloudflare-one/connections/connect-devices/user-side-certificates/manual-deployment/#mobile-device-management-mdm-software) to distribute the Cloudflare certificate to your fleet of devices, or not using the Cloudflare certificate because you do not want to have TLS decryption enabled. TLS decryption must be enabled to enforce Gateway HTTP and network policies.
 
