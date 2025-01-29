@@ -17,8 +17,9 @@ Gateway [generates a unique root CA](#generate-a-cloudflare-root-certificate) fo
 
 Your Cloudflare default certificate will expire on February 2, 2025. To generate a new certificate:
 
-1. In [Zero Trust](https://one.dash.cloudflare.com/), go to **Settings** > **Resources** > select **Manage** next to **Cloudflare certificates**.
-2. Follow the instructions on top of the page.
+1. In [Zero Trust](https://one.dash.cloudflare.com/), go to **Settings** > **Resources**.
+2. Select **Manage** next to **Cloudflare certificates**.
+3. Follow the instructions on top of the page.
 
 Starting with WARP client version 2024.12.554.0 and later, the WARP client will automatically install Cloudflare certificates in an end-user device's certificate store as soon as the Cloudflare certificates appears as **Available** in the Cloudflare dashboard. Certificate propagation to end-user devices can take up to 24 hours, but can be expedited by resetting the encryption keys.
 
