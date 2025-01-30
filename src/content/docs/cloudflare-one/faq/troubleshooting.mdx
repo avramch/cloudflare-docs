@@ -186,3 +186,29 @@ Gateway does not support this downgrade mechanism. When receiving the `HTTP_1_1_
 If you see an error with the title `This site can't provide a secure connection` and a subtitle of `<hostname> uses an unsupported protocol`, you must [order an Advanced Certificate](/ssl/edge-certificates/advanced-certificate-manager/manage-certificates/#create-a-certificate).
 
 If you added a [multi-level subdomain](/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/#2a-connect-an-application) (more than one level of subdomain), you must [order an Advanced Certificate for the hostname](/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/#2a-connect-an-application) as Cloudflare's Universal certificate will not cover the public hostname by default.
+
+## As of February 2, 2025, my end-user device's browser is returning a `Your connection is not private` warning.
+
+The default global Cloudflare root certificate will expire on 2025s-02-02. If you installed the default Cloudflare certificate before 2024-10-17, you must [generate a new certificate](/cloudflare-one/connections/connect-devices/user-side-certificates/#generate-a-cloudflare-root-certificate) and activate it for your Zero Trust organization to avoid inspection errors. If you did not generate a new certificate before February 2, 2025, you will encounter browser warnings like `Your connection is not private`.
+
+Starting with WARP client version 2024.12.554.0 and later, the WARP client will automatically install Cloudflare certificates in an end-user device's certificate store as soon as the Cloudflare certificates appears as **Available** in the Cloudflare dashboard. Certificate propagation to end-user devices can take up to 24 hours, but can be expedited by resetting the encryption keys.
+
+To reset the encryption keys:
+
+1. Open the WARP GUI on your device.
+2. Select the gear icon on the top right > **Preferences**.
+3. Select **Connection** > select **Reset Encryption Keys**.
+
+After confirming that the certificates are installed on the end-user device, mark the certificate as **In-Use**. To mark the certificate as **In-Use**:
+
+1. In [Zero Trust](https://one.dash.cloudflare.com/), go to **Settings** > **Resources** > select **Manage** next to **Cloudflare certificates**.
+2. Select a certificate.
+3. In the detailed menu, under **Basic Information** mark the certificate as **In-Use**.
+
+For WARP client versions prior to 2024.12.554.0, certificates had to be marked as **In-Use** in the Cloudflare dashboard before the WARP client could push the Cloudflare certificates to an end-user device's certificate store. Certificate propagation could also take up to 24 hours but resetting the encryption keys will force the update.
+
+In both scenarios (before and after WARP client version 2024.12.554.0), certificate propagation will only occur when the WARP client is responsible for automatically installing the certificate on the client device. Enable certificate propagation by the WARP client by going to **Settings** > **WARP Client** in [Zero Trust](https://one.dash.cloudflare.com/) and toggle **Install CA to system certificate store** on.
+
+If **Install CA to system certificate store** is toggled off, you are either [manually installing the certificate](/cloudflare-one/connections/connect-devices/user-side-certificates/manual-deployment/), using a [MDM solution](/cloudflare-one/connections/connect-devices/user-side-certificates/manual-deployment/#mobile-device-management-mdm-software) to distribute the Cloudflare certificate to your fleet of devices, or not using the Cloudflare certificate because you do not want to have TLS decryption enabled. TLS decryption must be enabled to enforce Gateway HTTP and network policies.
+
+macOS Big Sur and newer releases do not allow WARP to automatically trust the certificate. You must either manually trust the certificate as the user or use a MDM to trust the certificate. For details, go to [Manually trust the certificate](/cloudflare-one/connections/connect-devices/user-side-certificates/automated-deployment/#manually-trust-the-certificate).
