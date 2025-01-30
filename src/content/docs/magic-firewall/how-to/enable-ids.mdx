@@ -78,11 +78,11 @@ Similarly, sending a patch request with the `enabled` field set to `true` will e
 
 </TabItem> </Tabs>
 
-## IDS limitations
+## IDS rules
 
-Currently, IDS does not run on every packet. IDS rules are run on a sampled subset.
+IDS rules are run on a subset of packets.
 
-IDS does not run on WAN-to-Internet traffic sent to Gateway. IDS will run on WAN-to-Internet traffic if Gateway upgrade is disabled.
+IDS will run on WAN-to-Internet traffic if Gateway upgrade is disabled. IDS also supports the current flows:
 
 | Flow | Magic Firewall | IDS | 
 | ---- | ---- | --- |
