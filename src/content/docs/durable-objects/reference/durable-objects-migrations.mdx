@@ -114,11 +114,13 @@ transferred_classes = [{from = "<SourceDurableObjectClass>", from_script = "<Sou
 
 :::caution[Important]
 
-The destination class (the class that stored Durable Objects are being transferred to) for a rename or transfer migration must be exported by the deployed Worker.
+- The destination class (the class that stored Durable Objects are being transferred to) for a rename or transfer migration must be exported by the deployed Worker.
 
-After a rename or transfer migration, requests to the destination Durable Object class will have access to the source Durable Object's stored data.
+- You don't have to create the destination Durable Object class before running a rename or transfer migration. The migration will create the destination class for you.
 
-After a migration, any existing bindings to the original Durable Object class (for example, from other Workers) will automatically forward to the updated destination class. However, any Workers bound to the updated Durable Object class must update their Durable Object binding configuration in the `wrangler` configuration file for their next deployment.
+- After a rename or transfer migration, requests to the destination Durable Object class will have access to the source Durable Object's stored data.
+
+- After a migration, any existing bindings to the original Durable Object class (for example, from other Workers) will automatically forward to the updated destination class. However, any Workers bound to the updated Durable Object class must update their Durable Object binding configuration in the `wrangler` configuration file for their next deployment.
 
 :::
 
