@@ -189,9 +189,33 @@ If you added a [multi-level subdomain](/cloudflare-one/connections/connect-netwo
 
 ## As of February 2, 2025, my end-user device's browser is returning a `Your connection is not private` warning.
 
-The default global Cloudflare root certificate will expire on 2025s-02-02. If you installed the default Cloudflare certificate before 2024-10-17, you must [generate a new certificate](/cloudflare-one/connections/connect-devices/user-side-certificates/#generate-a-cloudflare-root-certificate) and activate it for your Zero Trust organization to avoid inspection errors. If you did not generate a new certificate before February 2, 2025, you will encounter browser warnings like `Your connection is not private`.
+The default global Cloudflare root certificate will expire on 2025-02-02. If you installed the default Cloudflare certificate before 2024-10-17, you must [generate a new certificate](/cloudflare-one/connections/connect-devices/user-side-certificates/#generate-a-cloudflare-root-certificate) and activate it for your Zero Trust organization to avoid inspection errors. If you did not generate a new certificate before February 2, 2025, you will encounter browser warnings like `Your connection is not private`.
 
-Starting with WARP client version 2024.12.554.0 and later, the WARP client will automatically install Cloudflare certificates in an end-user device's certificate store as soon as the Cloudflare certificates appears as **Available** in the Cloudflare dashboard. Certificate propagation to end-user devices can take up to 24 hours, but can be expedited by resetting the encryption keys.
+Before deploying a new certificate, [update WARP](/cloudflare-one/connections/connect-devices/warp/download-warp/update-warp/#how-to-update-warp) to version 2024.12.554.0 or newer.
+
+Starting with WARP client version 2024.12.554.0 and later, the WARP client will automatically install Cloudflare certificates in an end-user device's certificate store as soon as the Cloudflare certificates appears as **Available** in the Cloudflare dashboard.
+
+For WARP client versions prior to 2024.12.554.0, certificates had to be marked as **In-Use** in the Cloudflare dashboard before the WARP client could push the Cloudflare certificates to an end-user device's certificate store.
+
+In both scenarios (before and after WARP client version 2024.12.554.0), certificate propagation will only occur when the WARP client is responsible for automatically installing the certificate on the client device. To enable the WARP client to propogate certificates:
+
+1. In [Zero Trust](https://one.dash.cloudflare.com/), go to **Settings** > **WARP Client**.
+2. Toggle **Install CA to system certificate store** on.
+
+If **Install CA to system certificate store** is toggled off, you are either [manually installing the certificate](/cloudflare-one/connections/connect-devices/user-side-certificates/manual-deployment/), using a [MDM solution](/cloudflare-one/connections/connect-devices/user-side-certificates/manual-deployment/#mobile-device-management-mdm-software) to distribute the Cloudflare certificate to your fleet of devices, or not using the Cloudflare certificate because you do not want to have TLS decryption enabled. [TLS decryption](/cloudflare-one/policies/gateway/http-policies/tls-decryption/) must be enabled to enforce Gateway HTTP and network policies.
+
+macOS Big Sur and newer releases do not allow WARP to automatically trust the certificate. You must either [manually trust the certificate](/cloudflare-one/connections/connect-devices/user-side-certificates/automated-deployment/#macos) as the user or [use a MDM to trust the certificate](/cloudflare-one/connections/connect-devices/user-side-certificates/manual-deployment/#mobile-device-management-mdm-software).
+
+To update your certificate:
+
+1. In [Zero Trust](https://one.dash.cloudflare.com/), go to **Settings** > **Resources** > select **Manage** next to **Cloudflare certificates**.
+2. Select **Generate certificate**.
+3. Select the expiration date for this new certificate (5 years is the default, but this can be adjusted) and select **Generate certificate**.
+4. The new certificate will be marked **Inactive** at first. Select the **three dots** to the right of the certificate > select **Activate** to activate the certificate.
+
+For WARP versions on or above 2024.12.554.0, selecting **Activate** will download the new certificate to end-user devices.
+
+Certificate propagation to end-user devices can take up to 24 hours, but can be expedited by resetting the encryption keys.
 
 To reset the encryption keys:
 
@@ -199,16 +223,37 @@ To reset the encryption keys:
 2. Select the gear icon on the top right > **Preferences**.
 3. Select **Connection** > select **Reset Encryption Keys**.
 
-After confirming that the certificates are installed on the end-user device, mark the certificate as **In-Use**. To mark the certificate as **In-Use**:
+After confirming that the certificate is installed and trusted on the end-user device, mark the certificate as **In-Use**. To mark the certificate as **In-Use**:
 
 1. In [Zero Trust](https://one.dash.cloudflare.com/), go to **Settings** > **Resources** > select **Manage** next to **Cloudflare certificates**.
 2. Select a certificate.
-3. In the detailed menu, under **Basic Information** mark the certificate as **In-Use**.
+3. In the detailed menu, under **Basic Information** select **Confirm and turn on certificate**.
+4. Once turned on, the new certificate will now show as **IN-USE** within the dashboard. **IN-USE** indicates that the certificate is being used for TLS Decryption.
 
-For WARP client versions prior to 2024.12.554.0, certificates had to be marked as **In-Use** in the Cloudflare dashboard before the WARP client could push the Cloudflare certificates to an end-user device's certificate store. Certificate propagation could also take up to 24 hours but resetting the encryption keys will force the update.
+It is recommended to have end users disconnect and reconnect WARP to expedite this change being reflected on their local machine. To verify the new certificate is being used correctly:
 
-In both scenarios (before and after WARP client version 2024.12.554.0), certificate propagation will only occur when the WARP client is responsible for automatically installing the certificate on the client device. Enable certificate propagation by the WARP client by going to **Settings** > **WARP Client** in [Zero Trust](https://one.dash.cloudflare.com/) and toggle **Install CA to system certificate store** on.
+1. Connect to WARP.
+2. Visit a site that is included within your WARP tunnel.
+3. Verify that no certificate error is enountered.
 
-If **Install CA to system certificate store** is toggled off, you are either [manually installing the certificate](/cloudflare-one/connections/connect-devices/user-side-certificates/manual-deployment/), using a [MDM solution](/cloudflare-one/connections/connect-devices/user-side-certificates/manual-deployment/#mobile-device-management-mdm-software) to distribute the Cloudflare certificate to your fleet of devices, or not using the Cloudflare certificate because you do not want to have TLS decryption enabled. TLS decryption must be enabled to enforce Gateway HTTP and network policies.
+Additionally, you can check the certificate used within your browser by viewing the certificate (steps vary by browser, but typically involve selecting the lock icon next to the URL) and verifying the OU does NOT reference `ECC Certificate Authority`.
 
-macOS Big Sur and newer releases do not allow WARP to automatically trust the certificate. You must either manually trust the certificate as the user or use a MDM to trust the certificate. For details, go to [Manually trust the certificate](/cloudflare-one/connections/connect-devices/user-side-certificates/automated-deployment/#manually-trust-the-certificate).
+The new certificate will be valid until the configured expiration date.
+
+### The new certificate not activating on the end-user device or I am getting a `Certificate is missing` warning even though the certificate is marked **IN-USE**.
+
+1. Rotate the keys used by WARP to force activate the new certificate by running:
+
+```cmd
+$ warp-cli tunnel rotate-keys
+```
+
+2. [Upgrade](<(/cloudflare-one/connections/connect-devices/warp/download-warp/update-warp/#how-to-update-warp)>) to WARP version 2024.12.554.0.
+
+Some customers who are on versions earlier than 2024.11.309.0 have experienced inconsistencies with certificate installation and may need to upgrade.
+
+3. Turn off TLS Decryption.
+
+If no measure is working quickly and you are encountering browser warnings that are blocking work, [turning off TLS decryption](/cloudflare-one/policies/gateway/http-policies/tls-decryption/#turn-on-tls-decryption) will prevent HTTP policies from being enforced and will ensure websites resolve until the certificate can be deployed to more user devices.
+
+Turning off TLS Decryption should be a temporary measure. TLS Decryption should be turned if you need to enforce HTTP policies and log traffic.
