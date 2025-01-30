@@ -5,7 +5,7 @@ head: []
 description: Node.js APIs available in Cloudflare Workers
 ---
 
-import { DirectoryListing } from "~/components";
+import { DirectoryListing, WranglerConfig } from "~/components";
 
 When you write a Worker, you may need to import packages from [npm](https://www.npmjs.com/). Many npm packages rely on APIs from the [Node.js runtime](https://nodejs.org/en/about), and will not work unless these Node.js APIs are available.
 
@@ -14,7 +14,7 @@ Cloudflare Workers provides a subset of Node.js APIs in two forms:
 1. As built-in APIs provided by the Workers Runtime
 2. As polyfills that [Wrangler](/workers/wrangler/) adds to your Worker's code
 
-You can view which APIs are supported using the [Node.js compatability matrix](https://workers-nodejs-compat-matrix.pages.dev).
+You can view which APIs are supported using the [Node.js compatibility matrix](https://workers-nodejs-compat-matrix.pages.dev).
 
 ## Get Started
 
@@ -55,7 +55,7 @@ Calling these mocked methods will either noop or will throw an error with a mess
 
 This allows you to import packages that use these Node.js modules, even if certain methods are not supported.
 
-For a full list of APIs supported, including information on which are mocked, see the [Node.js compatability matrix](https://workers-nodejs-compat-matrix.pages.dev).
+For a full list of APIs supported, including information on which are mocked, see the [Node.js compatibility matrix](https://workers-nodejs-compat-matrix.pages.dev).
 
 If an API you wish to use is missing and you want to suggest that Workers support it, please add a post or comment in the
 [Node.js APIs discussions category](https://github.com/cloudflare/workerd/discussions/categories/node-js-apis) on GitHub.
@@ -63,8 +63,6 @@ If an API you wish to use is missing and you want to suggest that Workers suppor
 ## Enable only AsyncLocalStorage
 
 To enable only the Node.js `AsyncLocalStorage` API, use the `nodejs_als` compatibility flag.
-
-
 
 <WranglerConfig>
 
