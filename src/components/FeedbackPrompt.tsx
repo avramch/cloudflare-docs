@@ -74,10 +74,6 @@ function Form({
 		formData.set("page", document.location.pathname);
 		formData.set("referrer", document.referrer);
 
-		for (const pair of formData.entries()) {
-			console.log(pair[0], pair[1]);
-		}
-
 		fetch("https://feedback.developers.cloudflare.com", {
 			method: "POST",
 			body: formData,
