@@ -147,13 +147,15 @@ npm create cloudflare@latest -- my-dynamic-site
 - For _Do you want to use git for version control_?, choose `Yes`.
 - For _Do you want to deploy your application_?, choose `No` (we will be making some changes before deploying).
 
-After setting up our project, change the directory by running the following command:
+After setting up the project, change the directory by running the following command:
 
 ```sh
 cd my-dynamic-site
 ```
 
-#### 2. Build your project
+#### 2. Build project
+
+Run the following command to build our project:
 
 ```sh
 npm run build
@@ -211,9 +213,11 @@ Our project structure should now look like this:
 npx wrangler deploy
 ```
 
-Our project is now deployed on Workers! But we can take this even further, by adding an API Worker.
+Our project is now deployed on Workers! But we can take this even further, by adding an **API Worker**.
 
 #### 5. Adjust our Wrangler configuration
+
+Replace the file contents of our Wrangler configuration with the following:
 
 <WranglerConfig>
 
@@ -244,7 +248,7 @@ By default, Cloudflare serves a `404 Not Found` to unmatched routes. In order to
 
 #### 5. Create a new directory `/api`, and add an `index.js` file
 
-```js {12}
+```js {13}
 // api/index.js
 
 export default {
@@ -262,7 +266,7 @@ export default {
 };
 ```
 
-**Let's breakdown what this does:**
+**Let's breakdown what this Worker does:**
 
 - Our Worker receives an HTTP request and extracts the URL.
 - If the request is for an API route (`/api/...`), it returns a JSON response.
