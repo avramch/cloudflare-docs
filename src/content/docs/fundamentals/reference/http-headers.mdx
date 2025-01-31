@@ -134,7 +134,7 @@ When configuring WAF custom rules, do not match on this header. These rules are 
 
 To block just the one worker, add a `Block` action triggered by the expression `cf.worker.upstream_zone eq "example.com"`.
 
-To block all worker subrequests except from your own zone worker, add a `Block` action triggered by the expression `not (cf.worker.upstream_zone in {"" "customer-zone.com"})`.
+To block all Worker subrequests except those from your own zone's Worker, add a `Block` action triggered by the expression `not (cf.worker.upstream_zone in {"" "customer-zone.com"})`.
 :::
 
 ### Connection
