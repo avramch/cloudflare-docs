@@ -132,7 +132,7 @@ The intended purpose of this header is to provide a means for recipients (for ex
 :::note
 When configuring WAF custom rules, do not match on this header. These rules are applied before Cloudflare adds the `CF-Worker` header. Instead, use the [`cf.worker.upstream_zone`](/ruleset-engine/rules-language/fields/reference/cf.worker.upstream_zone/) field, which contains the same value and exists for the same purpose.
 
-To block just the one worker, add a `Block` action triggered by the expression `cf.worker.upstream_zone eq "example.com"`.
+To block a specific Worker, add a `Block` action triggered by the expression `cf.worker.upstream_zone eq "example.com"`.
 
 To block all Worker subrequests except those from your own zone's Worker, add a `Block` action triggered by the expression `not (cf.worker.upstream_zone in {"" "customer-zone.com"})`.
 :::
