@@ -18,10 +18,7 @@ These timeouts help:
 - Improve user experience, by preventing users from waiting too long for a response
 - Proactively handle errors, by detecting unresponsive providers and triggering a fallback option
 
-Request timeouts can be set on a [Universal Endpoint](/ai-gateway/providers/universal/) or directly on a request to any [provider](/ai-gateway/providers/):
-
-- If set on a Universal Endpoint, it specifies the timeout duration for requests and triggers a fallback.
-- If set on a provider request, it specifies the timeout duration for a request and - if exceeded - returns an error.
+Request timeouts can be set on a Universal Endpoint or directly on a request to any provider.
 
 ### Definitions
 
@@ -31,29 +28,12 @@ A timeout is set in milliseconds. Additionaly, the timeout is based on when the 
 
 #### Universal Endpoint
 
-For a Universal endpoint, configure the timeout value by setting a `requestTimeout` property at the
+If set on a [Universal Endpoint](/ai-gateway/providers/universal/), a request timeout specifies the timeout duration for requests and triggers a fallback.
 
-by using one or more of the following properties, which are listed in order of priority:
+For a Universal Endpoint, configure the timeout value by setting a `requestTimeout` property either as a universal attribute or within the provider-specific `config` object.
 
-| Priority | Property                                                                                                               |
-| -------- | ---------------------------------------------------------------------------------------------------------------------- |
-| 1        | `requestTimeout` (added as a universal attribute)                                                                      |
-| 2        | `cf-aig-request-timeout` (header included at the [provider level](/ai-gateway/providers/universal/#payload-reference)) |
-| 3        | `cf-aig-request-timeout` (header included at the request level)                                                        |
-
-Your gateway follows this hierarchy to determine the timeout duration before implementing a fallback.
-
-### Request timeout example
-
-These request timeout values can interact to customize the behavior of your universal gateway.
-
-In this example, the request will try to answer `What is Cloudflare?` within 1000 milliseconds using the normal `@cf/meta/llama-3.1-8b-instruct` model. The `requestTimeout` property takes precedence over the `cf-aig-request-timeout` for `@cf/meta/llama-3.1-8b-instruct`.
-
-If that fails, then the gateway will timeout and move to the fallback `@cf/meta/llama-3.1-8b-instruct-fast` model. This model has 3000 milliseconds - determined by the request-level `cf-aig-request-timeout` value - to complete the request and provide an answer.
-
-```bash title="Request" collapse={36-50} {2,11,13-15}
+```bash title="Provider-level config" {12-14} collapse={15-48}
 curl 'https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}' \
-	--header 'cf-aig-request-timeout: 3000' \
 	--header 'Content-Type: application/json' \
 	--data '[
     {
@@ -98,7 +78,76 @@ curl 'https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}' \
                     "content": "What is Cloudflare?"
                 }
             ]
-        }
+        },
+				"config": {
+            "requestTimeout": 3000
+        },
     }
 ]'
 ```
+
+To further customize request handling, you can include unique `RequestTimeout` values for each provider and a default across your Universal Endpoint.
+
+In this case, the most specific value takes precedence. A timeout value on a specific provider would take precedence over the one on the endpoint itself.
+
+#### Direct provider
+
+If set on a [provider](/ai-gateway/providers/) request, request timeout specifies the timeout duration for a request and - if exceeded - returns an error.
+
+For a provider-specific endpoint, configure the timeout value by adding a `cf-aig-request-timeout` header.
+
+```bash title="Provider-specific endpoint example" {4}
+curl https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/workers-ai/@cf/meta/llama-3.1-8b-instruct \
+ --header 'Authorization: Bearer {cf_api_token}' \
+ --header 'Content-Type: application/json' \
+ --header 'cf-aig-request-timeout: 5000'
+ --data '{"prompt": "What is Cloudflare?"}'
+```
+
+---
+
+## Request retries
+
+AI Gateway also supports automatic retries for failed requests, with a maximum of five retry attempts.
+
+This feature improves your application's resiliency, ensuring you can recover from temporary issues without manual intervention.
+
+Request timeouts can be set on a Universal Endpoint or directly on a request to any provider.
+
+### Definitions
+
+With request retries, you can adjust a combination of three properties:
+
+- Number of attempts (max of 5 tries)
+- How long before retrying (in milliseconds, max of 5 seconds)
+- Backoff method (constant, linear, or exponential)
+
+On the final retry attempt, your gateway will wait until the request completes, regardless of how long it takes.
+
+### Configuration
+
+#### Universal endpoint
+
+If set on a [Universal Endpoint](/ai-gateway/providers/universal/), a request retry will automatically retry failed requests up to five times before triggering any configured fallbacks.
+
+For a Universal Endpoint, configure the timeout value by setting the following properties in the overall or provider-specific `config`:
+
+```json
+config:{
+	maxAttempts?: number;
+	retryDelay?: number;
+	backoff?: "constant" | "linear" | "exponential";
+}
+```
+
+As with the [request timeout](/ai-gateway/configuration/request-handling/#universal-endpoint), the values can interact with each other to provide more customized logic.
+
+#### Direct provider
+
+If set on a [provider](/ai-gateway/providers/) request, request timeout specifies the timeout duration for a request and - if exceeded - returns an error.
+
+For a provider-specific endpoint, configure the timeout value by adding different header values:
+
+- `cf-aig-max-attempts` (number)
+- `cf-aig-retry-delay` (number)
+- `cf-aig-backoff` ("constant" | "linear" | "exponential)
