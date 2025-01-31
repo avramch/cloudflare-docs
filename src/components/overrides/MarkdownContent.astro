@@ -72,6 +72,11 @@ const { tableOfContents } = Astro.props.entry.data;
 		}
 	}
 
+	.sl-markdown-content :global(pre) {
+		overflow-wrap: anywhere;
+		white-space: pre-wrap;
+	}
+
 	/* Custom styles for heading anchor links. */
 	.sl-markdown-content :global(.heading-wrapper) {
 		--icon-size: 0.75em;

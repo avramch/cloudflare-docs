@@ -1,10 +1,7 @@
 import rss from "@astrojs/rss";
-import { getCollection, getEntry } from "astro:content";
+import { getCollection } from "astro:content";
 import type { APIRoute } from "astro";
-import { marked, type Token } from "marked";
-import { getWranglerChangelog } from "~/util/changelogs";
-import { slug } from "github-slugger";
-import { entryToString } from "~/util/container";
+import { getChangelogs } from "~/util/changelogs";
 
 export async function getStaticPaths() {
 	const changelogs = await getCollection("docs", (entry) => {
@@ -28,16 +25,6 @@ export async function getStaticPaths() {
 }
 
 export const GET: APIRoute = async (context) => {
-	function walkTokens(token: Token) {
-		if (token.type === "image" || token.type === "link") {
-			if (token.href.startsWith("/")) {
-				token.href = context.site + token.href.slice(1);
-			}
-		}
-	}
-
-	marked.use({ walkTokens });
-
 	const entry = context.props.entry;
 
 	if (
@@ -49,94 +36,45 @@ export const GET: APIRoute = async (context) => {
 		);
 	}
 
-	const changelogs = await getCollection("changelogs", (changelog) => {
-		return (
-			entry.data.changelog_file_name?.includes(changelog.id) ||
-			changelog.data.productArea === entry.data.changelog_product_area_name
-		);
+	const changelogs = await getChangelogs({
+		filter: (changelog) => {
+			return (
+				entry.data.changelog_file_name?.includes(changelog.id) ||
+				changelog.data.productArea === entry.data.changelog_product_area_name
+			);
+		},
+		locals: context.locals,
+		addBaseUrl: true,
 	});
 
-	if (entry.data.changelog_file_name?.includes("wrangler")) {
-		changelogs.push(await getWranglerChangelog());
+	if (!changelogs) {
+		throw new Error(
+			`Filter for ${entry.data.changelog_file_name} or ${entry.data.changelog_product_area_name} removed all results.`,
+		);
 	}
 
-	const mapped = await Promise.all(
-		changelogs.flatMap((product) => {
-			return product.data.entries.map(async (entry) => {
-				let description;
-				if (entry.individual_page) {
-					const link = entry.link;
-
-					if (!link)
-						throw new Error(
-							`Changelog entry points to individual page but no link is provided`,
-						);
-
-					const page = await getEntry("docs", link.slice(1, -1));
-
-					if (!page)
-						throw new Error(
-							`Changelog entry points to ${link.slice(1, -1)} but unable to find entry with that slug`,
-						);
-
-					description =
-						(await entryToString(page, context.locals)) ?? page.body;
-				} else {
-					description = entry.description;
-				}
-
-				let link;
-				if (entry.link) {
-					link = entry.link;
-				} else {
-					const anchor = slug(entry.title ?? entry.publish_date);
-					link = product.data.link.concat(`#${anchor}`);
-				}
-
-				let title;
-				if (entry.scheduled) {
-					title = `Scheduled for ${entry.scheduled_date}`;
-				} else {
-					title = entry.title;
-				}
-
-				return {
-					product: product.data.productName,
-					link,
-					date: entry.publish_date,
-					description,
-					title,
-				};
-			});
-		}),
-	);
-
-	const entries = mapped.sort((a, b) => {
+	const entries = changelogs.sort((a, b) => {
 		return a.date < b.date ? 1 : a.date > b.date ? -1 : 0;
 	});
 
 	const rssName =
-		entry.data.changelog_product_area_name || changelogs[0].data.productName;
-
-	const site = new URL(context.site ?? "");
-	site.pathname = entry.id.concat("/");
-
+		entry.data.changelog_product_area_name || changelogs.at(0)?.product.name;
 	const isArea = Boolean(entry.data.changelog_product_area_name);
 
 	return rss({
 		title: `Changelog | ${rssName}`,
 		description: `Updates to ${rssName}`,
-		site,
+		site: "https://developers.cloudflare.com/" + entry.id + "/",
 		trailingSlash: false,
 		items: entries.map((entry) => {
 			return {
-				title: `${entry.product} - ${entry.title ?? entry.date}`,
-				description: marked.parse(entry.description ?? "", {
-					async: false,
-				}) as string,
+				title: `${entry.product.name} - ${entry.title}`,
+				description: entry.content,
 				pubDate: new Date(entry.date),
 				link: entry.link,
-				customData: isArea ? `<product>${entry.product}</product>` : undefined,
+				customData: isArea
+					? `<product>${entry.product.name}</product>`
+					: undefined,
 			};
 		}),
 	});

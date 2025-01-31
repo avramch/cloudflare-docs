@@ -1,65 +1,95 @@
 import { z } from "astro:schema";
-import { getCollection } from "astro:content";
+import { getCollection, getEntry } from "astro:content";
 import { type CollectionEntry } from "astro:content";
+import { entryToString } from "./container";
+import { Marked, marked } from "marked";
+import { baseUrl } from "marked-base-url";
 
-export async function getChangelogs(opts?: {
-	filter?: Parameters<typeof getCollection<"changelogs">>[1];
-	wranglerOnly?: boolean;
-	deprecationsOnly?: boolean;
+export type Changelogs = Awaited<ReturnType<typeof getChangelogs>>;
+export type Filter = (entry: CollectionEntry<"changelogs">) => boolean;
+
+export async function getChangelogs({
+	filter,
+	locals,
+	addBaseUrl,
+}: {
+	filter?: Filter;
+	locals: App.Locals;
+	addBaseUrl?: boolean;
 }) {
-	let changelogs;
+	let changelogs = await getCollection("changelogs");
+	changelogs.push(wranglerChangelogs);
 
-	if (opts?.wranglerOnly) {
-		changelogs = [await getWranglerChangelog()];
-	} else if (opts?.filter) {
-		changelogs = await getCollection("changelogs", opts.filter);
-	} else {
-		changelogs = await getCollection("changelogs");
+	if (filter) {
+		changelogs = changelogs.filter((c) => filter(c));
 	}
 
-	if (!changelogs) {
-		throw new Error(
-			`[getChangelogs] Unable to find any changelogs with ${JSON.stringify(opts)}`,
-		);
+	const marked = new Marked();
+	if (addBaseUrl) {
+		marked.use(baseUrl("https://developers.cloudflare.com/"));
 	}
 
-	if (opts?.deprecationsOnly) {
-		changelogs = changelogs.filter((x) => x.id === "api-deprecations");
-	} else {
-		changelogs = changelogs.filter((x) => x.id !== "api-deprecations");
-	}
+	const data = changelogs.map((c) => c.data);
 
-	const products = [...new Set(changelogs.flatMap((x) => x.data.productName))];
-	const productAreas = [
-		...new Set(changelogs.flatMap((x) => x.data.productArea)),
-	];
+	return await Promise.all(
+		data.flatMap((changelog) => {
+			return changelog.entries.map(async (entry) => {
+				let title: string;
+				let link: string;
+				let content: string;
 
-	const mapped = changelogs.flatMap((product) => {
-		return product.data.entries.map((entry) => {
-			return {
-				product: product.data.productName,
-				link: product.data.link,
-				date: entry.publish_date,
-				description: entry.description,
-				title: entry.title,
-				scheduled: entry.scheduled,
-				productLink: product.data.productLink,
-				productAreaName: product.data.productArea,
-				productAreaLink: product.data.productAreaLink,
-				individual_page: entry.individual_page && entry.link,
-			};
-		});
-	});
+				if (!entry.title) {
+					if (entry.scheduled && entry.scheduled_date) {
+						title = `${changelog.productName} - Scheduled changes for ${entry.scheduled_date}`;
+					} else {
+						title = `${changelog.productName} - ${entry.publish_date}`;
+					}
+				} else {
+					title = entry.title;
+				}
 
-	const grouped = Object.entries(Object.groupBy(mapped, (entry) => entry.date));
-	const entries = grouped.sort().reverse();
+				if (entry.individual_page) {
+					if (!entry.link) throw new Error("");
 
-	return { products, productAreas, changelogs: entries };
+					const page = await getEntry("docs", entry.link.slice(1, -1));
+					if (!page) throw new Error("");
+
+					link = entry.link;
+					content = await entryToString(page, locals);
+				} else {
+					if (!entry.description) throw new Error("");
+
+					link = changelog.link + `#${entry.publish_date}`;
+					content = marked.parse(entry.description, { async: false });
+				}
+
+				return {
+					product: {
+						name: changelog.productName,
+						link: changelog.productLink,
+						changelog: changelog.link,
+						area: {
+							name: changelog.productArea,
+							changelog: changelog.productAreaLink,
+						},
+					},
+					title,
+					date: entry.publish_date,
+					individual_page: entry.individual_page,
+					scheduled: entry.scheduled,
+					scheduled_date: entry.scheduled_date,
+					link,
+					content,
+				};
+			});
+		}),
+	);
 }
 
-export async function getWranglerChangelog(): Promise<
-	CollectionEntry<"changelogs">
-> {
+// Stored as a const so it is only run once.
+const wranglerChangelogs = await getWranglerChangelog();
+
+async function getWranglerChangelog(): Promise<CollectionEntry<"changelogs">> {
 	const response = await fetch(
 		"https://api.github.com/repos/cloudflare/workers-sdk/releases?per_page=100",
 	);
@@ -88,14 +118,14 @@ export async function getWranglerChangelog(): Promise<
 		collection: "changelogs",
 		data: {
 			link: "/workers/platform/changelog/wrangler/",
-			productName: "wrangler",
+			productName: "Wrangler",
 			productLink: "/workers/wrangler/",
 			productArea: "Developer platform",
 			productAreaLink: "/workers/platform/changelog/platform/",
 			entries: releases.map((release) => {
 				return {
 					publish_date: release.published_at.toISOString().substring(0, 10),
-					title: release.name.split("@")[1],
+					title: `Wrangler - ${release.name.split("@")[1]}`,
 					link: `https://github.com/cloudflare/workers-sdk/releases/tag/wrangler%40${release.name.split("@")[1]}`,
 					description: release.body,
 				};
