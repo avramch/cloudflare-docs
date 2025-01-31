@@ -5,6 +5,12 @@ productLink: "/workflows/"
 productArea: Developer platform
 productAreaLink: /workers/platform/changelog/platform/
 entries:
+  - publish_date: "2025-02-03"
+      title: "Concurrent Workflows limit increased"
+      description: |-
+        Workflows now supports up to 4,500 concurrent (running) instances, up from the previous limit of 100. This limit will continue to increase during the Workflows open beta.
+
+        This increase applies to all users on the Workers Paid plan, and takes effective immediately.
   - publish_date: "2024-12-19"
     title: "Better instance control, improved queued logic, and step limit increased"
     description: |-
