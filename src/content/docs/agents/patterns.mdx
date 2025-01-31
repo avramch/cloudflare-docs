@@ -8,22 +8,22 @@ head: []
 
 import { GitHubCode } from "~/components";
 
-Common patterns for implementing AI agents, based on [Anthropic's research on agent patterns](https://www.anthropic.com/research/building-effective-agents).
+Common patterns for implementing AI agents, based on [Anthropic's patterns for building effective agents](https://www.anthropic.com/research/building-effective-agents).
 
-Code samples use the [AI SDK](https://sdk.vercel.ai/docs/foundations/agents), running in Cloudflare's Durable Objects.
+Code samples use the [AI SDK](https://sdk.vercel.ai/docs/foundations/agents), running in [Durable Objects](/durable-objects).
 
 ## Prompt Chaining
 
 Decomposes tasks into a sequence of steps, where each LLM call processes the output of the previous one.
 
-![Figure 1: Prompt Chaining](~/assets/images/agents/01-sequential.png "Figure 1: Prompt Chaining")
+![Figure 1: Prompt Chaining](~/assets/images/agents/01-prompt-chaining.jpg)
 
 [**Interactive Demo**](https://patterns.agents.workers.dev)
 
 <GitHubCode
 	repo="cloudflare/agents"
-	file="examples/anthropic-patterns/src/flows/01-sequential.txt"
-	commit="3b8959063c17d53e27a3040670d9cbf8a95644e1"
+	file="guides/anthropic-patterns/src/flows/01 sequential.txt"
+	commit="56fb801dc8f980f080b36fcdbd94005099829495"
 	lang="ts"
 />
 
@@ -31,14 +31,14 @@ Decomposes tasks into a sequence of steps, where each LLM call processes the out
 
 Classifies input and directs it to specialized followup tasks, allowing for separation of concerns.
 
-![Figure 2: Routing](~/assets/images/agents/02-routing.png "Figure 2: Routing")
+![Figure 2: Routing](~/assets/images/agents/2_Routing.jpg)
 
 [**Interactive Demo**](https://patterns.agents.workers.dev)
 
 <GitHubCode
 	repo="cloudflare/agents"
-	file="examples/anthropic-patterns/src/flows/02-routing.txt"
-	commit="3b8959063c17d53e27a3040670d9cbf8a95644e1"
+	file="guides/anthropic-patterns/src/flows/02 routing.txt"
+	commit="56fb801dc8f980f080b36fcdbd94005099829495"
 	lang="ts"
 />
 
@@ -46,14 +46,14 @@ Classifies input and directs it to specialized followup tasks, allowing for sepa
 
 Enables simultaneous task processing through sectioning or voting mechanisms.
 
-![Figure 3: Parallelization](~/assets/images/agents/03-parallel.png "Figure 3: Parallelization")
+![Figure 3: Parallelization](~/assets/images/agents/3_Parallelization.jpg)
 
 [**Interactive Demo**](https://patterns.agents.workers.dev)
 
 <GitHubCode
 	repo="cloudflare/agents"
-	file="examples/anthropic-patterns/src/flows/03-parallel.txt"
-	commit="3b8959063c17d53e27a3040670d9cbf8a95644e1"
+	file="guides/anthropic-patterns/src/flows/03 parallel.txt"
+	commit="56fb801dc8f980f080b36fcdbd94005099829495"
 	lang="ts"
 />
 
@@ -61,14 +61,14 @@ Enables simultaneous task processing through sectioning or voting mechanisms.
 
 A central LLM dynamically breaks down tasks, delegates to worker LLMs, and synthesizes results.
 
-![Figure 4: Orchestrator Workers](~/assets/images/agents/04-orchestrator.png "Figure 4: Orchestrator Workers")
+![Figure 4: Orchestrator Workers](~/assets/images/agents/4_Orchestrator-Workers.jpg)
 
 [**Interactive Demo**](https://patterns.agents.workers.dev)
 
 <GitHubCode
 	repo="cloudflare/agents"
-	file="examples/anthropic-patterns/src/flows/04-orchestrator.txt"
-	commit="3b8959063c17d53e27a3040670d9cbf8a95644e1"
+	file="guides/anthropic-patterns/src/flows/04 orchestrator.txt"
+	commit="56fb801dc8f980f080b36fcdbd94005099829495"
 	lang="ts"
 />
 
@@ -76,13 +76,13 @@ A central LLM dynamically breaks down tasks, delegates to worker LLMs, and synth
 
 One LLM generates responses while another provides evaluation and feedback in a loop.
 
-![Figure 5: Evaluator-Optimizer](~/assets/images/agents/05-evaluator.png "Figure 5: Evaluator-Optimizer")
+![Figure 5: Evaluator-Optimizer](~/assets/images/agents/5_Evaluator-Optimizer.jpg)
 
 [**Interactive Demo**](https://patterns.agents.workers.dev)
 
 <GitHubCode
 	repo="cloudflare/agents"
-	file="examples/anthropic-patterns/src/flows/05-evaluator.txt"
-	commit="3b8959063c17d53e27a3040670d9cbf8a95644e1"
+	file="guides/anthropic-patterns/src/flows/05 evaluator.txt"
+	commit="56fb801dc8f980f080b36fcdbd94005099829495"
 	lang="ts"
 />
