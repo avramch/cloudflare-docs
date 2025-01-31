@@ -1,0 +1,104 @@
+---
+pcx_content_type: configuration
+title: Request handling
+sidebar:
+  order: 4
+---
+
+import { Render, Aside } from "~/components";
+
+Your AI gateway supports different strategies for handling requests to providers, which allows you to manage AI interactions effectively and ensure your applications remain responsive and reliable.
+
+## Request timeouts
+
+A request timeout allows you to trigger fallbacks or a retry if a provider takes too long to respond.
+
+These timeouts help:
+
+- Improve user experience, by preventing users from waiting too long for a response
+- Proactively handle errors, by detecting unresponsive providers and triggering a fallback option
+
+Request timeouts can be set on a [Universal Endpoint](/ai-gateway/providers/universal/) or directly on a request to any [provider](/ai-gateway/providers/):
+
+- If set on a Universal Endpoint, it specifies the timeout duration for requests and triggers a fallback.
+- If set on a provider request, it specifies the timeout duration for a request and - if exceeded - returns an error.
+
+### Definitions
+
+A timeout is set in milliseconds. Additionaly, the timeout is based on when the first part of the response comes back. As long as the first part of the response returns within the specified timeframe - such as when streaming a response - your gateway will wait for the response.
+
+### Configuration
+
+#### Universal Endpoint
+
+For a Universal endpoint, configure the timeout value by setting a `requestTimeout` property at the
+
+by using one or more of the following properties, which are listed in order of priority:
+
+| Priority | Property                                                                                                               |
+| -------- | ---------------------------------------------------------------------------------------------------------------------- |
+| 1        | `requestTimeout` (added as a universal attribute)                                                                      |
+| 2        | `cf-aig-request-timeout` (header included at the [provider level](/ai-gateway/providers/universal/#payload-reference)) |
+| 3        | `cf-aig-request-timeout` (header included at the request level)                                                        |
+
+Your gateway follows this hierarchy to determine the timeout duration before implementing a fallback.
+
+### Request timeout example
+
+These request timeout values can interact to customize the behavior of your universal gateway.
+
+In this example, the request will try to answer `What is Cloudflare?` within 1000 milliseconds using the normal `@cf/meta/llama-3.1-8b-instruct` model. The `requestTimeout` property takes precedence over the `cf-aig-request-timeout` for `@cf/meta/llama-3.1-8b-instruct`.
+
+If that fails, then the gateway will timeout and move to the fallback `@cf/meta/llama-3.1-8b-instruct-fast` model. This model has 3000 milliseconds - determined by the request-level `cf-aig-request-timeout` value - to complete the request and provide an answer.
+
+```bash title="Request" collapse={36-50} {2,11,13-15}
+curl 'https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}' \
+	--header 'cf-aig-request-timeout: 3000' \
+	--header 'Content-Type: application/json' \
+	--data '[
+    {
+        "provider": "workers-ai",
+        "endpoint": "@cf/meta/llama-3.1-8b-instruct",
+        "headers": {
+            "Authorization": "Bearer {cloudflare_token}",
+            "Content-Type": "application/json",
+            "cf-aig-request-timeout": "2000"
+        },
+        "config": {
+            "requestTimeout": 1000
+        },
+        "query": {
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "You are a friendly assistant"
+                },
+                {
+                    "role": "user",
+                    "content": "What is Cloduflare?"
+                }
+            ]
+        }
+    },
+    {
+        "provider": "workers-ai",
+        "endpoint": "@cf/meta/llama-3.1-8b-instruct-fast",
+        "headers": {
+            "Authorization": "Bearer {cloudflare_token}",
+            "Content-Type": "application/json"
+        },
+        "query": {
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "You are a friendly assistant"
+                },
+                {
+                    "role": "user",
+                    "content": "What is Cloudflare?"
+                }
+            ]
+        }
+    }
+]'
+```
