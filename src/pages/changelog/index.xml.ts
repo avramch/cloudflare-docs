@@ -19,7 +19,7 @@ export const GET: APIRoute = async (context) => {
 		trailingSlash: false,
 		items: entries.map((entry) => {
 			return {
-				title: entry.title,
+				title: `${entry.product.name} - ${entry.title}`,
 				description: entry.content,
 				pubDate: new Date(entry.date),
 				link: entry.link,

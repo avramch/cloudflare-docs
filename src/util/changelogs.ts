@@ -2,7 +2,7 @@ import { z } from "astro:schema";
 import { getCollection, getEntry } from "astro:content";
 import { type CollectionEntry } from "astro:content";
 import { entryToString } from "./container";
-import { Marked, marked } from "marked";
+import { Marked } from "marked";
 import { baseUrl } from "marked-base-url";
 
 export type Changelogs = Awaited<ReturnType<typeof getChangelogs>>;
