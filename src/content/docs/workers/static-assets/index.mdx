@@ -44,7 +44,7 @@ You can upload static assets (HTML, CSS, images and other files) as part of your
 
 When you deploy your project, Cloudflare deploys both your Worker code and your static assets in a single operation. This deployment operates as a tightly integrated "unit" running across Cloudflare's network, combining static file hosting, custom logic, and global caching.
 
-The **assets directory** specified in your Wrangler configuration file is central to this design. During deployment, Wrangler automatically uploads the files from this directory to Cloudflare's infrastructure. Once deployed, requests for these assets are routed efficiently to locations closest to your users.
+The **assets directory** specified in your [Wrangler configuration file](/workers/wrangler/configuration/#assets) is central to this design. During deployment, Wrangler automatically uploads the files from this directory to Cloudflare's infrastructure. Once deployed, requests for these assets are routed efficiently to locations closest to your users.
 
 <WranglerConfig>
 
@@ -92,8 +92,6 @@ This default routing behavior can be configured and overridden. For example, if 
 <WranglerConfig>
 
     ```toml
-    	name = "my-spa"
-    	compatibility_date = "2025-01-01"
     	[assets]
     	directory = "./dist"
     	not_found_handling = "single-page-application"
@@ -107,8 +105,6 @@ If you want the Worker code to execute before serving an asset (for example, to 
 <WranglerConfig>
 
     ```toml
-    	name = "my-spa"
-    	compatibility_date = "2025-01-01"
     	[assets]
     	directory = "./dist"
     	run_worker_first = true
@@ -155,7 +151,7 @@ cd my-dynamic-site
 
 #### 2. Build project
 
-Run the following command to build our project:
+Run the following command to build the project:
 
 ```sh
 npm run build
@@ -248,6 +244,8 @@ By default, Cloudflare serves a `404 Not Found` to unmatched routes. In order to
 
 #### 5. Create a new directory `/api`, and add an `index.js` file
 
+Copy the contents below into the index.js file.
+
 ```js {13}
 // api/index.js
 
@@ -276,9 +274,9 @@ export default {
 
 Edit `src/App.tsx` so that it includes an additional button that calls the API, and sets some state. Replace the file contents with the following code:
 
-```js
-// src/App.tsx
+```js {9,25, 33-47}
 
+// src/App.tsx
 import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
